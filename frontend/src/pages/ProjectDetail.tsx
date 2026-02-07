@@ -1,17 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { projectsApi, sbomsApi, componentsApi, analysisApi } from '../lib/api';
-import { 
-  ArrowLeft, 
-  FileText, 
-  Shield, 
-  Scale, 
-  AlertCircle, 
+import { projectsApi, sbomsApi, componentsApi, analysisApi, exportApi } from '../lib/api';
+import {
+  ArrowLeft,
+  FileText,
+  Shield,
+  Scale,
+  AlertCircle,
   CheckCircle,
   XCircle,
   AlertTriangle,
   Loader2,
   RefreshCw,
+  Download,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -195,6 +196,28 @@ export default function ProjectDetail() {
                         </>
                       )}
                     </button>
+                    <div className="relative group">
+                      <button
+                        className="px-3 py-1 text-sm bg-green-50 text-green-700 rounded hover:bg-green-100 flex items-center"
+                      >
+                        <Download className="h-4 w-4 mr-1" />
+                        Export
+                      </button>
+                      <div className="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg border border-gray-200 hidden group-hover:block z-10">
+                        <button
+                          onClick={() => exportApi.downloadCSV(sbom.id)}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-md"
+                        >
+                          Download CSV
+                        </button>
+                        <button
+                          onClick={() => exportApi.downloadExcel(sbom.id)}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-md"
+                        >
+                          Download Excel
+                        </button>
+                      </div>
+                    </div>
                     <button
                       onClick={() => setSelectedSbomId(selectedSbomId === sbom.id ? null : sbom.id)}
                       className="px-3 py-1 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100"

@@ -82,6 +82,18 @@ export const analysisApi = {
     api.get('/analysis/licenses/policies'),
 };
 
+// Export API
+export const exportApi = {
+  downloadCSV: (sbomId: string) => {
+    const url = `${API_BASE_URL}/export/sbom/${sbomId}/csv`;
+    window.open(url, '_blank');
+  },
+  downloadExcel: (sbomId: string) => {
+    const url = `${API_BASE_URL}/export/sbom/${sbomId}/excel`;
+    window.open(url, '_blank');
+  },
+};
+
 // Convenience exports
 export default {
   getProjects: () => projectsApi.getAll().then(res => res.data),
