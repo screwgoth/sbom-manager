@@ -51,6 +51,37 @@ export const healthApi = {
   check: () => api.get('/health'),
 };
 
+// Scanner API
+export const scannerApi = {
+  scanDirectory: (data: { projectId: string; projectName: string; projectVersion?: string; author?: string; directoryPath: string }) => 
+    api.post('/scanner/scan/directory', data),
+  scanUpload: (formData: FormData) => 
+    api.post('/scanner/scan/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  detect: (fileNames: string[]) => 
+    api.post('/scanner/detect', { fileNames }),
+};
+
+// Analysis API
+export const analysisApi = {
+  // Vulnerabilities
+  scanVulnerabilities: (sbomId: string) => 
+    api.post(`/analysis/vulnerabilities/scan/${sbomId}`),
+  getVulnerabilitySummary: (sbomId: string) => 
+    api.get(`/analysis/vulnerabilities/summary/${sbomId}`),
+  getComponentVulnerabilities: (componentId: string) => 
+    api.get(`/analysis/vulnerabilities/component/${componentId}`),
+  
+  // Licenses
+  getLicenseSummary: (sbomId: string, policy: string = 'commercial') => 
+    api.get(`/analysis/licenses/summary/${sbomId}?policy=${policy}`),
+  analyzeComponentLicense: (componentId: string, policy: string = 'commercial') => 
+    api.get(`/analysis/licenses/component/${componentId}?policy=${policy}`),
+  getLicensePolicies: () => 
+    api.get('/analysis/licenses/policies'),
+};
+
 // Convenience exports
 export default {
   getProjects: () => projectsApi.getAll().then(res => res.data),

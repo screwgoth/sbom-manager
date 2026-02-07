@@ -4,6 +4,7 @@ import { getParserForFile } from './parsers';
 import { SPDXGenerator } from './generators/spdx';
 import { Component, Ecosystem, ScanResult } from './types';
 import { db, sboms, components } from '../db';
+import { scanSBOMForVulnerabilities } from '../services/vulnerability-service';
 
 export interface ScanOptions {
   projectId: string;
@@ -108,6 +109,12 @@ export class ScannerService {
 
       await db.insert(components).values(componentsData);
     }
+
+    // Trigger vulnerability scan in background (don't block response)
+    console.log(`[Scanner] Triggering vulnerability scan for SBOM ${sbomId}`);
+    scanSBOMForVulnerabilities(sbomId).catch(err => {
+      console.error(`[Scanner] Vulnerability scan failed for SBOM ${sbomId}:`, err);
+    });
 
     return {
       projectId: options.projectId,

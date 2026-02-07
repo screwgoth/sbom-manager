@@ -9,6 +9,7 @@ import componentsRouter from './routes/components';
 import vulnerabilitiesRouter from './routes/vulnerabilities';
 import healthRouter from './routes/health';
 import scannerRouter from './routes/scanner';
+import analysisRouter from './routes/analysis';
 
 const app = new Hono();
 
@@ -27,6 +28,7 @@ app.route('/api/sboms', sbomsRouter);
 app.route('/api/components', componentsRouter);
 app.route('/api/vulnerabilities', vulnerabilitiesRouter);
 app.route('/api/scanner', scannerRouter);
+app.route('/api/analysis', analysisRouter);
 
 // Root endpoint
 app.get('/', (c) => {
@@ -41,6 +43,7 @@ app.get('/', (c) => {
       components: '/api/components',
       vulnerabilities: '/api/vulnerabilities',
       scanner: '/api/scanner',
+      analysis: '/api/analysis',
     },
   });
 });
