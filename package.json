@@ -1,0 +1,18 @@
+{
+  "name": "sbom-manager",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "bun run --filter backend dev & bun run --filter frontend dev",
+    "dev:backend": "bun run --filter backend dev",
+    "dev:frontend": "bun run --filter frontend dev",
+    "build": "bun run --filter backend build && bun run --filter frontend build"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5"
+  }
+}
