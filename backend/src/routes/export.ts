@@ -248,4 +248,238 @@ exportRouter.get('/sbom/:id/excel', async (c) => {
   }
 });
 
+// Export SBOM as JSON (native format)
+exportRouter.get('/sbom/:id/json', async (c) => {
+  try {
+    const sbomId = c.req.param('id');
+    const data = await getSbomData(sbomId);
+
+    if (!data) {
+      return c.json({ error: 'SBOM not found' }, 404);
+    }
+
+    const jsonExport = {
+      sbom: {
+        id: data.sbom.id,
+        version: data.sbom.version,
+        format: data.sbom.format,
+        createdAt: data.sbom.createdAt,
+        author: data.sbom.author,
+      },
+      project: {
+        id: data.project?.id,
+        name: data.project?.name,
+        description: data.project?.description,
+      },
+      components: data.components.map((comp) => ({
+        id: comp.id,
+        name: comp.name,
+        version: comp.version,
+        license: comp.license,
+        supplier: comp.supplier,
+        purl: comp.purl,
+        description: comp.description,
+        vulnerabilities: comp.vulnerabilities.map((v) => ({
+          cveId: v.cveId,
+          severity: v.severity,
+          cvssScore: v.cvssScore,
+          description: v.description,
+          fixedVersion: v.fixedVersion,
+          status: v.status,
+        })),
+      })),
+      metadata: {
+        totalComponents: data.components.length,
+        totalVulnerabilities: data.components.reduce(
+          (acc, c) => acc + (c.vulnerabilities?.length || 0),
+          0
+        ),
+        exportedAt: new Date().toISOString(),
+      },
+    };
+
+    const filename = `sbom-${data.project?.name || 'unknown'}-v${data.sbom.version}.json`;
+
+    c.header('Content-Type', 'application/json');
+    c.header('Content-Disposition', `attachment; filename="${filename}"`);
+    return c.json(jsonExport);
+  } catch (error) {
+    console.error('Error exporting JSON:', error);
+    return c.json({ error: 'Failed to export JSON' }, 500);
+  }
+});
+
+// Export SBOM as SPDX format
+exportRouter.get('/sbom/:id/spdx', async (c) => {
+  try {
+    const sbomId = c.req.param('id');
+    const data = await getSbomData(sbomId);
+
+    if (!data) {
+      return c.json({ error: 'SBOM not found' }, 404);
+    }
+
+    const spdxDocument = {
+      spdxVersion: 'SPDX-2.3',
+      dataLicense: 'CC0-1.0',
+      SPDXID: 'SPDXRef-DOCUMENT',
+      name: `${data.project?.name || 'Unknown'}-${data.sbom.version}`,
+      documentNamespace: `https://sbom-manager.local/spdx/${data.sbom.id}`,
+      creationInfo: {
+        created: new Date(data.sbom.createdAt).toISOString(),
+        creators: [data.sbom.author ? `Person: ${data.sbom.author}` : 'Tool: SBOM Manager'],
+        licenseListVersion: '3.20',
+      },
+      packages: data.components.map((comp, index) => ({
+        SPDXID: `SPDXRef-Package-${index + 1}`,
+        name: comp.name,
+        versionInfo: comp.version,
+        supplier: comp.supplier ? `Organization: ${comp.supplier}` : 'NOASSERTION',
+        downloadLocation: comp.purl || 'NOASSERTION',
+        filesAnalyzed: false,
+        licenseConcluded: comp.license || 'NOASSERTION',
+        licenseDeclared: comp.license || 'NOASSERTION',
+        copyrightText: 'NOASSERTION',
+        description: comp.description || '',
+        ...(comp.checksumSha256 && {
+          checksums: [
+            {
+              algorithm: 'SHA256',
+              checksumValue: comp.checksumSha256,
+            },
+          ],
+        }),
+        externalRefs: comp.purl
+          ? [
+              {
+                referenceCategory: 'PACKAGE-MANAGER',
+                referenceType: 'purl',
+                referenceLocator: comp.purl,
+              },
+            ]
+          : [],
+      })),
+      relationships: [
+        {
+          spdxElementId: 'SPDXRef-DOCUMENT',
+          relationshipType: 'DESCRIBES',
+          relatedSpdxElement: 'SPDXRef-Package-1',
+        },
+      ],
+    };
+
+    const filename = `sbom-${data.project?.name || 'unknown'}-v${data.sbom.version}-spdx.json`;
+
+    c.header('Content-Type', 'application/json');
+    c.header('Content-Disposition', `attachment; filename="${filename}"`);
+    return c.json(spdxDocument);
+  } catch (error) {
+    console.error('Error exporting SPDX:', error);
+    return c.json({ error: 'Failed to export SPDX' }, 500);
+  }
+});
+
+// Export SBOM as CycloneDX format
+exportRouter.get('/sbom/:id/cyclonedx', async (c) => {
+  try {
+    const sbomId = c.req.param('id');
+    const data = await getSbomData(sbomId);
+
+    if (!data) {
+      return c.json({ error: 'SBOM not found' }, 404);
+    }
+
+    const cycloneDxDocument = {
+      bomFormat: 'CycloneDX',
+      specVersion: '1.5',
+      serialNumber: `urn:uuid:${data.sbom.id}`,
+      version: 1,
+      metadata: {
+        timestamp: new Date(data.sbom.createdAt).toISOString(),
+        tools: [
+          {
+            name: 'SBOM Manager',
+            version: '1.0.0',
+          },
+        ],
+        ...(data.sbom.author && {
+          authors: [
+            {
+              name: data.sbom.author,
+            },
+          ],
+        }),
+        component: {
+          type: 'application',
+          name: data.project?.name || 'Unknown',
+          version: data.sbom.version,
+          description: data.project?.description || '',
+        },
+      },
+      components: data.components.map((comp) => ({
+        type: 'library',
+        'bom-ref': comp.id,
+        name: comp.name,
+        version: comp.version,
+        ...(comp.supplier && { supplier: { name: comp.supplier } }),
+        ...(comp.purl && { purl: comp.purl }),
+        ...(comp.description && { description: comp.description }),
+        ...(comp.license && {
+          licenses: [
+            {
+              license: {
+                id: comp.license,
+              },
+            },
+          ],
+        }),
+        ...(comp.checksumSha256 && {
+          hashes: [
+            {
+              alg: 'SHA-256',
+              content: comp.checksumSha256,
+            },
+          ],
+        }),
+      })),
+      ...(data.components.some((c) => c.vulnerabilities && c.vulnerabilities.length > 0) && {
+        vulnerabilities: data.components.flatMap((comp) =>
+          (comp.vulnerabilities || []).map((vuln) => ({
+            'bom-ref': vuln.id,
+            id: vuln.cveId,
+            source: {
+              name: 'NVD',
+              url: `https://nvd.nist.gov/vuln/detail/${vuln.cveId}`,
+            },
+            ratings: [
+              {
+                severity: vuln.severity?.toUpperCase(),
+                ...(vuln.cvssScore && { score: parseFloat(vuln.cvssScore) }),
+              },
+            ],
+            description: vuln.description,
+            ...(vuln.fixedVersion && {
+              recommendation: `Upgrade to version ${vuln.fixedVersion}`,
+            }),
+            affects: [
+              {
+                ref: comp.id,
+              },
+            ],
+          }))
+        ),
+      }),
+    };
+
+    const filename = `sbom-${data.project?.name || 'unknown'}-v${data.sbom.version}-cdx.json`;
+
+    c.header('Content-Type', 'application/json');
+    c.header('Content-Disposition', `attachment; filename="${filename}"`);
+    return c.json(cycloneDxDocument);
+  } catch (error) {
+    console.error('Error exporting CycloneDX:', error);
+    return c.json({ error: 'Failed to export CycloneDX' }, 500);
+  }
+});
+
 export default exportRouter;

@@ -9,6 +9,28 @@ export const api = axios.create({
   },
 });
 
+// Add token to requests
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Handle 401 errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Projects API
 export const projectsApi = {
   getAll: () => api.get('/projects'),
@@ -82,15 +104,45 @@ export const analysisApi = {
     api.get('/analysis/licenses/policies'),
 };
 
+// Auth API
+export const authApi = {
+  login: (email: string, password: string) => 
+    api.post('/auth/login', { email, password }),
+  register: (email: string, password: string, name?: string) => 
+    api.post('/auth/register', { email, password, name }),
+  getMe: () => api.get('/auth/me'),
+  logout: () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user');
+  },
+};
+
 // Export API
 export const exportApi = {
   downloadCSV: (sbomId: string) => {
+    const token = localStorage.getItem('auth_token');
     const url = `${API_BASE_URL}/export/sbom/${sbomId}/csv`;
-    window.open(url, '_blank');
+    window.open(url + `?token=${token}`, '_blank');
   },
   downloadExcel: (sbomId: string) => {
+    const token = localStorage.getItem('auth_token');
     const url = `${API_BASE_URL}/export/sbom/${sbomId}/excel`;
-    window.open(url, '_blank');
+    window.open(url + `?token=${token}`, '_blank');
+  },
+  downloadJSON: (sbomId: string) => {
+    const token = localStorage.getItem('auth_token');
+    const url = `${API_BASE_URL}/export/sbom/${sbomId}/json`;
+    window.open(url + `?token=${token}`, '_blank');
+  },
+  downloadSPDX: (sbomId: string) => {
+    const token = localStorage.getItem('auth_token');
+    const url = `${API_BASE_URL}/export/sbom/${sbomId}/spdx`;
+    window.open(url + `?token=${token}`, '_blank');
+  },
+  downloadCycloneDX: (sbomId: string) => {
+    const token = localStorage.getItem('auth_token');
+    const url = `${API_BASE_URL}/export/sbom/${sbomId}/cyclonedx`;
+    window.open(url + `?token=${token}`, '_blank');
   },
 };
 

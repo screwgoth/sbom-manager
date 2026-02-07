@@ -1,10 +1,21 @@
-import { pgTable, uuid, varchar, text, timestamp, jsonb, decimal, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, text, timestamp, jsonb, decimal, pgEnum, boolean } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Enums
 export const sbomFormatEnum = pgEnum('sbom_format', ['spdx', 'cyclonedx']);
 export const severityEnum = pgEnum('severity', ['critical', 'high', 'medium', 'low', 'none']);
 export const vulnerabilityStatusEnum = pgEnum('vulnerability_status', ['open', 'mitigated', 'false_positive']);
+
+// Users table
+export const users = pgTable('users', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  passwordHash: varchar('password_hash', { length: 255 }).notNull(),
+  name: varchar('name', { length: 255 }),
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
 
 // Projects table
 export const projects = pgTable('projects', {

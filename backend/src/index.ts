@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 
+import authRouter from './routes/auth';
 import projectsRouter from './routes/projects';
 import sbomsRouter from './routes/sboms';
 import componentsRouter from './routes/components';
@@ -11,6 +12,7 @@ import healthRouter from './routes/health';
 import scannerRouter from './routes/scanner';
 import analysisRouter from './routes/analysis';
 import exportRouter from './routes/export';
+import { authMiddleware } from './middleware/auth';
 
 const app = new Hono();
 
@@ -18,12 +20,23 @@ const app = new Hono();
 app.use('*', logger());
 app.use('*', prettyJSON());
 app.use('*', cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:80', 'http://localhost'],
   credentials: true,
 }));
 
-// Routes
+// Public routes (no auth required)
 app.route('/api/health', healthRouter);
+app.route('/api/auth', authRouter);
+
+// Protected routes (auth required)
+app.use('/api/projects/*', authMiddleware);
+app.use('/api/sboms/*', authMiddleware);
+app.use('/api/components/*', authMiddleware);
+app.use('/api/vulnerabilities/*', authMiddleware);
+app.use('/api/scanner/*', authMiddleware);
+app.use('/api/analysis/*', authMiddleware);
+app.use('/api/export/*', authMiddleware);
+
 app.route('/api/projects', projectsRouter);
 app.route('/api/sboms', sbomsRouter);
 app.route('/api/components', componentsRouter);

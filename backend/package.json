@@ -13,13 +13,17 @@
   "dependencies": {
     "@hono/node-server": "^1.8.0",
     "axios": "^1.13.4",
+    "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.29.3",
     "hono": "^4.0.0",
+    "jsonwebtoken": "^9.0.3",
     "postgres": "^3.4.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
     "@types/bun": "latest",
+    "@types/jsonwebtoken": "^9.0.10",
     "drizzle-kit": "^0.20.13"
   }
 }

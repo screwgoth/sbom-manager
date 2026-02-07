@@ -203,19 +203,42 @@ export default function ProjectDetail() {
                         <Download className="h-4 w-4 mr-1" />
                         Export
                       </button>
-                      <div className="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg border border-gray-200 hidden group-hover:block z-10">
-                        <button
-                          onClick={() => exportApi.downloadCSV(sbom.id)}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-md"
-                        >
-                          Download CSV
-                        </button>
-                        <button
-                          onClick={() => exportApi.downloadExcel(sbom.id)}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-md"
-                        >
-                          Download Excel
-                        </button>
+                      <div className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 hidden group-hover:block z-10">
+                        <div className="py-1">
+                          <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Standard Formats</div>
+                          <button
+                            onClick={() => exportApi.downloadCSV(sbom.id)}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            📄 CSV
+                          </button>
+                          <button
+                            onClick={() => exportApi.downloadExcel(sbom.id)}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            📊 Excel (.xlsx)
+                          </button>
+                          <button
+                            onClick={() => exportApi.downloadJSON(sbom.id)}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            📦 JSON
+                          </button>
+                          <div className="border-t border-gray-200 my-1"></div>
+                          <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">SBOM Formats</div>
+                          <button
+                            onClick={() => exportApi.downloadSPDX(sbom.id)}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            🔒 SPDX 2.3
+                          </button>
+                          <button
+                            onClick={() => exportApi.downloadCycloneDX(sbom.id)}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            🔄 CycloneDX 1.5
+                          </button>
+                        </div>
                       </div>
                     </div>
                     <button

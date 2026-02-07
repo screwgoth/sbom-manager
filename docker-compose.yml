@@ -1,9 +1,11 @@
 version: '3.8'
 
 services:
+  # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
     container_name: sbom-manager-db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: sbom_user
       POSTGRES_PASSWORD: sbom_password
@@ -17,6 +19,81 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - sbom-network
+
+  # Backend API (Bun + Hono)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sbom-manager-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://sbom_user:sbom_password@postgres:5432/sbom_manager
+      - JWT_SECRET=${JWT_SECRET:-change-this-secret-key-in-production}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - sbom-network
+    command: sh -c "bun run src/db/migrate.ts && bun run dist/index.js"
+
+  # Frontend (React + Vite + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sbom-manager-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - sbom-network
+
+  # Nginx Reverse Proxy (Optional but recommended)
+  nginx:
+    image: nginx:alpine
+    container_name: sbom-manager-proxy
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - sbom-network
 
 volumes:
   postgres_data:
+    driver: local
+
+networks:
+  sbom-network:
+    driver: bridge
