@@ -1,12 +1,13 @@
 import { Hono } from 'hono';
 import { db } from '../db';
+import { sql } from 'drizzle-orm';
 
 const health = new Hono();
 
 health.get('/', async (c) => {
   try {
     // Test database connection
-    await db.execute('SELECT 1');
+    await db.execute(sql`SELECT 1`);
     
     return c.json({
       status: 'healthy',
