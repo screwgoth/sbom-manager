@@ -11,11 +11,18 @@ export interface AuthPayload {
 export const authMiddleware = async (c: Context, next: Next) => {
   const authHeader = c.req.header('Authorization');
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return c.json({ error: 'Unauthorized - No token provided' }, 401);
+  let token: string | undefined;
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.substring(7);
+  } else {
+    // Fallback: accept token from query parameter (used by window.open downloads)
+    token = c.req.query('token') || undefined;
   }
 
-  const token = authHeader.substring(7);
+  if (!token) {
+    return c.json({ error: 'Unauthorized - No token provided' }, 401);
+  }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as AuthPayload;

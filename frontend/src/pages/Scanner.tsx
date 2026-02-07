@@ -36,8 +36,12 @@ export default function Scanner() {
           });
         }
 
+        const token = localStorage.getItem('auth_token');
         const response = await fetch('http://localhost:3000/api/scanner/scan/upload', {
           method: 'POST',
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
           body: formData,
         });
 
@@ -49,9 +53,13 @@ export default function Scanner() {
         return response.json();
       } else {
         // Directory scan
+        const token = localStorage.getItem('auth_token');
         const response = await fetch('http://localhost:3000/api/scanner/scan/directory', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
           body: JSON.stringify({
             projectId: data.projectId,
             projectName: data.projectName,

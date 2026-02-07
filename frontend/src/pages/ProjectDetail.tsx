@@ -7,7 +7,6 @@ import {
   Shield,
   Scale,
   AlertCircle,
-  CheckCircle,
   XCircle,
   AlertTriangle,
   Loader2,
