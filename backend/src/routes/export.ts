@@ -1,20 +1,21 @@
 import { Hono } from 'hono';
 import { db, components, sboms, projects, componentVulnerabilities, vulnerabilities } from '../db';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import * as XLSX from 'xlsx';
+import { getUserId } from '../utils/ownership';
 
 const exportRouter = new Hono();
 
 // Helper function to get SBOM data with components and vulnerabilities
-async function getSbomData(sbomId: string) {
-  // Get SBOM details
+async function getSbomData(sbomId: string, userId: string) {
+  // Get SBOM details (with ownership check)
   const sbomResult = await db.select({
     sbom: sboms,
     project: projects,
   })
     .from(sboms)
-    .leftJoin(projects, eq(sboms.projectId, projects.id))
-    .where(eq(sboms.id, sbomId))
+    .innerJoin(projects, eq(sboms.projectId, projects.id))
+    .where(and(eq(sboms.id, sbomId), eq(projects.userId, userId)))
     .limit(1);
 
   if (sbomResult.length === 0) {
@@ -127,8 +128,9 @@ function convertToCSV(data: any) {
 // Export SBOM as CSV
 exportRouter.get('/sbom/:id/csv', async (c) => {
   try {
+    const userId = getUserId(c);
     const sbomId = c.req.param('id');
-    const data = await getSbomData(sbomId);
+    const data = await getSbomData(sbomId, userId);
 
     if (!data) {
       return c.json({ error: 'SBOM not found' }, 404);
@@ -149,8 +151,9 @@ exportRouter.get('/sbom/:id/csv', async (c) => {
 // Export SBOM as Excel
 exportRouter.get('/sbom/:id/excel', async (c) => {
   try {
+    const userId = getUserId(c);
     const sbomId = c.req.param('id');
-    const data = await getSbomData(sbomId);
+    const data = await getSbomData(sbomId, userId);
 
     if (!data) {
       return c.json({ error: 'SBOM not found' }, 404);
@@ -251,8 +254,9 @@ exportRouter.get('/sbom/:id/excel', async (c) => {
 // Export SBOM as JSON (native format)
 exportRouter.get('/sbom/:id/json', async (c) => {
   try {
+    const userId = getUserId(c);
     const sbomId = c.req.param('id');
-    const data = await getSbomData(sbomId);
+    const data = await getSbomData(sbomId, userId);
 
     if (!data) {
       return c.json({ error: 'SBOM not found' }, 404);
@@ -312,8 +316,9 @@ exportRouter.get('/sbom/:id/json', async (c) => {
 // Export SBOM as SPDX format
 exportRouter.get('/sbom/:id/spdx', async (c) => {
   try {
+    const userId = getUserId(c);
     const sbomId = c.req.param('id');
-    const data = await getSbomData(sbomId);
+    const data = await getSbomData(sbomId, userId);
 
     if (!data) {
       return c.json({ error: 'SBOM not found' }, 404);
@@ -382,8 +387,9 @@ exportRouter.get('/sbom/:id/spdx', async (c) => {
 // Export SBOM as CycloneDX format
 exportRouter.get('/sbom/:id/cyclonedx', async (c) => {
   try {
+    const userId = getUserId(c);
     const sbomId = c.req.param('id');
-    const data = await getSbomData(sbomId);
+    const data = await getSbomData(sbomId, userId);
 
     if (!data) {
       return c.json({ error: 'SBOM not found' }, 404);

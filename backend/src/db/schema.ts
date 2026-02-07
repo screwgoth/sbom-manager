@@ -22,6 +22,7 @@ export const projects = pgTable('projects', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
   description: text('description'),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -80,7 +81,15 @@ export const componentVulnerabilities = pgTable('component_vulnerabilities', {
 });
 
 // Relations
-export const projectsRelations = relations(projects, ({ many }) => ({
+export const usersRelations = relations(users, ({ many }) => ({
+  projects: many(projects),
+}));
+
+export const projectsRelations = relations(projects, ({ one, many }) => ({
+  user: one(users, {
+    fields: [projects.userId],
+    references: [users.id],
+  }),
   sboms: many(sboms),
 }));
 

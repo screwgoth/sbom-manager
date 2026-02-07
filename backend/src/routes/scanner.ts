@@ -3,6 +3,7 @@ import { ScannerService } from '../scanner/scanner-service';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { getUserId, verifyProjectOwnership } from '../utils/ownership';
 
 const scannerRouter = new Hono();
 const scannerService = new ScannerService();
@@ -15,6 +16,12 @@ scannerRouter.post('/scan/directory', async (c) => {
 
     if (!projectId || !projectName || !directoryPath) {
       return c.json({ error: 'projectId, projectName, and directoryPath are required' }, 400);
+    }
+
+    const userId = getUserId(c);
+    const owned = await verifyProjectOwnership(userId, projectId);
+    if (!owned) {
+      return c.json({ error: 'Project not found' }, 404);
     }
 
     // Validate directory exists
@@ -56,6 +63,12 @@ scannerRouter.post('/scan/upload', async (c) => {
 
     if (!projectId || !projectName) {
       return c.json({ error: 'projectId and projectName are required' }, 400);
+    }
+
+    const userId = getUserId(c);
+    const owned = await verifyProjectOwnership(userId, projectId);
+    if (!owned) {
+      return c.json({ error: 'Project not found' }, 404);
     }
 
     // Get uploaded files

@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { db, vulnerabilities, componentVulnerabilities } from '../db';
 import { eq } from 'drizzle-orm';
+import { getUserId, verifyComponentOwnership } from '../utils/ownership';
 
 const vulnerabilitiesRouter = new Hono();
 
@@ -52,11 +53,17 @@ vulnerabilitiesRouter.get('/cve/:cveId', async (c) => {
   }
 });
 
-// Get vulnerabilities for a component
+// Get vulnerabilities for a component (verify ownership)
 vulnerabilitiesRouter.get('/component/:componentId', async (c) => {
   try {
+    const userId = getUserId(c);
     const componentId = c.req.param('componentId');
-    
+
+    const owned = await verifyComponentOwnership(userId, componentId);
+    if (!owned) {
+      return c.json({ error: 'Component not found' }, 404);
+    }
+
     const componentVulns = await db.select({
       vulnerability: vulnerabilities,
       status: componentVulnerabilities.status,
@@ -101,16 +108,22 @@ vulnerabilitiesRouter.post('/', async (c) => {
   }
 });
 
-// Link vulnerability to component
+// Link vulnerability to component (verify ownership)
 vulnerabilitiesRouter.post('/link', async (c) => {
   try {
+    const userId = getUserId(c);
     const body = await c.req.json();
     const { componentId, vulnerabilityId, status } = body;
-    
+
     if (!componentId || !vulnerabilityId) {
       return c.json({ error: 'componentId and vulnerabilityId are required' }, 400);
     }
-    
+
+    const owned = await verifyComponentOwnership(userId, componentId);
+    if (!owned) {
+      return c.json({ error: 'Component not found' }, 404);
+    }
+
     const link = await db.insert(componentVulnerabilities).values({
       componentId,
       vulnerabilityId,
