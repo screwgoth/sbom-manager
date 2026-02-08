@@ -38,6 +38,8 @@ export class ScannerService {
    */
   async scanFiles(filePaths: string[], options: ScanOptions): Promise<ScanResult> {
     const allComponents: Component[] = [];
+    const filesProcessed: Array<{ fileName: string; ecosystem: string; componentCount: number }> = [];
+    const ecosystemsSet = new Set<string>();
     let detectedEcosystem: Ecosystem = Ecosystem.UNKNOWN;
 
     // Parse each file
@@ -54,7 +56,17 @@ export class ScannerService {
         const content = await fs.readFile(filePath, 'utf-8');
         const parseResult = await parser.parse(fileName, content);
         
+        const componentCount = parseResult.components.length;
         allComponents.push(...parseResult.components);
+        
+        // Track file processing details
+        filesProcessed.push({
+          fileName,
+          ecosystem: parser.ecosystem,
+          componentCount,
+        });
+        
+        ecosystemsSet.add(parser.ecosystem);
         detectedEcosystem = parser.ecosystem;
       } catch (error) {
         console.error(`Error parsing ${fileName}:`, error);
@@ -123,6 +135,8 @@ export class ScannerService {
       componentsCount: uniqueComponents.length,
       components: uniqueComponents,
       sbomContent: spdxDoc,
+      filesProcessed,
+      ecosystems: Array.from(ecosystemsSet),
     };
   }
 

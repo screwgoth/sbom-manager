@@ -26,6 +26,8 @@ export interface ScanResult {
   componentsCount: number;
   components: Component[];
   sbomContent: any;
+  filesProcessed?: Array<{ fileName: string; ecosystem: string; componentCount: number }>;
+  ecosystems?: string[];
 }
 
 export enum Ecosystem {

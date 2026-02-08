@@ -113,6 +113,8 @@ scannerRouter.post('/scan/upload', async (c) => {
           sbomId: result.sbomId,
           ecosystem: result.ecosystem,
           componentsCount: result.componentsCount,
+          filesProcessed: result.filesProcessed || [],
+          ecosystems: result.ecosystems || [],
         },
       }, 201);
     } finally {
