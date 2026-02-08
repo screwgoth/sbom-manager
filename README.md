@@ -18,6 +18,10 @@ A comprehensive web-based application for generating, managing, and analyzing So
 ### ✅ SBOM Generation
 - **5 Ecosystem Support**: Node.js, Python, Java, Go, Rust
 - **12 File Formats**: package.json, package-lock.json, requirements.txt, Pipfile, Pipfile.lock, pyproject.toml, pom.xml, build.gradle, build.gradle.kts, go.mod, go.sum, Cargo.toml, Cargo.lock
+- **🆕 Multi-File Upload**: Upload multiple dependency files in a single scan with drag-and-drop support
+- **Mixed Ecosystems**: Combine files from different package managers (e.g., package.json + requirements.txt)
+- **Smart Deduplication**: Automatically merges components from multiple files
+- **File Validation**: Real-time validation and ecosystem detection for uploaded files
 - **SPDX 2.3 Compliant**: Full specification support with validation
 - **CERT-In Compliance**: All 21 minimum data fields included
 - **Automatic Scanning**: Background vulnerability scanning after SBOM generation
@@ -453,6 +457,7 @@ cd frontend && bun run build
 - **[PHASE1_COMPLETE.md](./PHASE1_COMPLETE.md)** - Foundation implementation
 - **[PHASE2_COMPLETE.md](./PHASE2_COMPLETE.md)** - Scanner implementation
 - **[PHASE3_COMPLETE.md](./PHASE3_COMPLETE.md)** - Vulnerability & license tracking
+- **🆕 [MULTI_FILE_UPLOAD.md](./docs/MULTI_FILE_UPLOAD.md)** - Multi-file upload feature guide
 
 ### External Resources
 
