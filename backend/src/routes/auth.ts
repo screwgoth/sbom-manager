@@ -3,8 +3,9 @@ import bcrypt from 'bcryptjs';
 import { db, users } from '../db';
 import { eq } from 'drizzle-orm';
 import { generateToken } from '../middleware/auth';
+import type { Variables } from '../types/hono';
 
-const authRouter = new Hono();
+const authRouter = new Hono<{ Variables: Variables }>();
 
 // Register new user
 authRouter.post('/register', async (c) => {

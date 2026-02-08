@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
+import { serve } from '@hono/node-server';
 
 import authRouter from './routes/auth';
 import projectsRouter from './routes/projects';
@@ -68,7 +69,7 @@ const port = parseInt(process.env.PORT || '3000');
 
 console.log(`🚀 SBOM Manager API running on http://localhost:${port}`);
 
-export default {
-  port,
+serve({
   fetch: app.fetch,
-};
+  port,
+});

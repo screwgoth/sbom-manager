@@ -7,10 +7,12 @@
     "frontend"
   ],
   "scripts": {
-    "dev": "bun run --filter backend dev & bun run --filter frontend dev",
-    "dev:backend": "bun run --filter backend dev",
-    "dev:frontend": "bun run --filter frontend dev",
-    "build": "bun run --filter backend build && bun run --filter frontend build"
+    "dev": "npm run dev:backend & npm run dev:frontend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
+    "build:backend": "npm run build --workspace=backend",
+    "build:frontend": "npm run build --workspace=frontend"
   },
   "devDependencies": {
     "@types/node": "^20.11.5"

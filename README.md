@@ -77,7 +77,7 @@ A comprehensive web-based application for generating, managing, and analyzing So
 
 ### Tech Stack
 - **Frontend**: React 18 + TypeScript + Vite + Tailwind CSS + shadcn/ui + TanStack Query
-- **Backend**: Bun + Hono + Drizzle ORM
+- **Backend**: Node.js 20 + Hono + Drizzle ORM
 - **Database**: PostgreSQL 14+
 - **External APIs**: NVD (vulnerabilities), OSV (vulnerabilities fallback)
 
@@ -121,9 +121,9 @@ sbom-manager/
 
 ## 📋 Prerequisites
 
-- **Bun** >= 1.3.0 ([Install Bun](https://bun.sh))
+- **Node.js** >= 20.0.0 ([Install Node.js](https://nodejs.org))
+- **npm** >= 10.0.0 (comes with Node.js)
 - **Docker** (for PostgreSQL) OR **PostgreSQL** >= 14 installed locally
-- **Node.js** >= 18 (bundled with Bun)
 - **(Optional) NVD API Key** for faster vulnerability scanning ([Get API Key](https://nvd.nist.gov/developers/request-an-api-key))
 
 ---
@@ -177,7 +177,7 @@ git clone https://github.com/screwgoth/sbom-manager.git
 cd sbom-manager
 
 # Install all dependencies
-bun install
+npm install
 ```
 
 ### 2. Start Database
@@ -211,7 +211,7 @@ cp .env.example .env
 
 ```bash
 cd backend
-bun run db:migrate
+npm run db:migrate
 ```
 
 ### 5. Start Servers
@@ -219,16 +219,16 @@ bun run db:migrate
 **Option A: Both servers together**
 ```bash
 # From project root
-bun run dev
+npm run dev
 ```
 
 **Option B: Separate terminals**
 ```bash
 # Terminal 1: Backend
-cd backend && bun run dev
+cd backend && npm run dev
 
 # Terminal 2: Frontend
-cd frontend && bun run dev
+cd frontend && npm run dev
 ```
 
 ### 6. Access the Application
@@ -309,12 +309,12 @@ To change policy, update API calls with `?policy=permissive` or `?policy=open-so
 ```bash
 cd backend
 
-bun run dev          # Start dev server with hot reload
-bun run build        # Build for production
-bun run start        # Start production server
-bun run db:generate  # Generate new migrations
-bun run db:migrate   # Run pending migrations
-bun run db:studio    # Open Drizzle Studio (DB GUI)
+npm run dev          # Start dev server with hot reload
+npm run build        # Build for production
+npm run start        # Start production server
+npm run db:generate  # Generate new migrations
+npm run db:migrate   # Run pending migrations
+npm run db:studio    # Open Drizzle Studio (DB GUI)
 ```
 
 ### Frontend Commands
@@ -322,10 +322,10 @@ bun run db:studio    # Open Drizzle Studio (DB GUI)
 ```bash
 cd frontend
 
-bun run dev          # Start Vite dev server
-bun run build        # Build for production
-bun run preview      # Preview production build
-bun run lint         # Run ESLint
+npm run dev          # Start Vite dev server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
 ```
 
 ### Testing
@@ -333,11 +333,11 @@ bun run lint         # Run ESLint
 ```bash
 # Test scanner with sample projects
 cd /path/to/sbom-manager
-bun run test-scanner.js
+node test-scanner.js
 
 # Test specific parser
 cd backend
-bun run src/scanner/parsers/npm.ts
+npx tsx src/scanner/parsers/npm.ts
 ```
 
 ---
@@ -412,14 +412,14 @@ docker compose logs postgres
 # Reset database (WARNING: deletes all data)
 docker compose down -v
 docker compose up -d
-cd backend && bun run db:migrate
+cd backend && npm run db:migrate
 ```
 
 ### Vulnerability Scan Not Working
 
 1. **Check NVD API Key**: Make sure `NVD_API_KEY` is set in `backend/.env`
 2. **Check Rate Limiting**: Without API key, scans are slower (6s per component)
-3. **Check Logs**: Run backend with `bun run dev` and watch console output
+3. **Check Logs**: Run backend with `npm run dev` and watch console output
 4. **Verify Network**: Ensure server can reach `services.nvd.nist.gov` and `api.osv.dev`
 
 ### Port Conflicts
@@ -439,14 +439,14 @@ cd backend && bun run db:migrate
 
 ```bash
 # Clear cache and reinstall
-rm -rf node_modules backend/node_modules frontend/node_modules
-bun install
+rm -rf node_modules backend/node_modules frontend/node_modules package-lock.json
+npm install
 
 # Rebuild backend
-cd backend && bun run build
+cd backend && npm run build
 
 # Rebuild frontend
-cd frontend && bun run build
+cd frontend && npm run build
 ```
 
 ---

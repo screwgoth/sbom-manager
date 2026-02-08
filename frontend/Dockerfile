@@ -1,10 +1,10 @@
-FROM oven/bun:1.3-alpine AS base
+FROM node:20-alpine AS base
 WORKDIR /app
 
 # Install dependencies
 FROM base AS deps
-COPY package.json bun.lock* ./
-RUN bun install --frozen-lockfile
+COPY package.json package-lock.json* ./
+RUN npm ci && npm cache clean --force
 
 # Build the app
 FROM base AS builder
@@ -12,7 +12,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build for production
-RUN bun run build
+RUN npm run build
 
 # Production image with nginx
 FROM nginx:alpine AS runner

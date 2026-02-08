@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed - Migration to Node.js (2026-02-08)
+- **Runtime Migration**: Migrated from Bun to Node.js 20 LTS for broader compatibility and ecosystem support
+  - Updated all backend scripts to use Node.js with `tsx` for TypeScript execution
+  - Replaced Bun.serve() with @hono/node-server for HTTP server
+  - Updated all package.json scripts from `bun run` to `npm run`
+  - Replaced `bun.lock` with `package-lock.json` for npm dependency management
+  - Updated Dockerfiles to use `node:20-alpine` base images
+  - Updated docker-compose.yml backend command to use `npx tsx` and `node`
+  - Added TypeScript compiler (`tsc`) for production builds
+  - Added `tsx` for development with hot reload support
+- **Build System**: Switched from Bun's native bundler to TypeScript compiler
+  - Backend now compiles to JavaScript in `dist/` directory
+  - Frontend build remains unchanged (Vite works with both)
+- **Type Safety**: Added proper TypeScript configurations with tsconfig.json
+  - Fixed type issues with Hono context variables
+  - Improved type safety for Drizzle ORM queries
+- **Documentation**: Updated all documentation to reflect Node.js/npm usage
+  - README.md prerequisites and installation instructions
+  - All command examples throughout documentation
+  - Troubleshooting guides and development commands
+- **Functionality**: All features remain 100% identical - zero breaking changes
+  - All 20+ API endpoints work identically
+  - Authentication, scanning, vulnerability tracking unchanged
+  - All 5 export formats work identically
+  - Docker deployment fully functional
+
+### Technical Migration Details
+- Replaced `@types/bun` with `@types/node` and `typescript` packages
+- Added proper Hono context typing with Variables interface
+- Fixed Drizzle ORM query chaining (`.where().where()` → `and()`)
+- Updated all npm scripts for workspace compatibility
+- No changes to database schema or migrations
+- No changes to API contracts or responses
+
 ### Added
 - **Multi-File Upload Support**: Scanner now accepts multiple dependency files in a single scan
   - Drag-and-drop interface for easy file selection

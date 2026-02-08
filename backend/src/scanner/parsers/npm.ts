@@ -73,8 +73,9 @@ export class NpmParser implements Parser {
       for (const [pkgPath, pkgData] of Object.entries(packages)) {
         if (pkgPath === '') continue; // Skip root package
         
-        const name = pkgData.name || pkgPath.replace(/^node_modules\//, '');
-        const version = pkgData.version;
+        const pkg = pkgData as any;
+        const name = pkg.name || pkgPath.replace(/^node_modules\//, '');
+        const version = pkg.version;
         
         if (!version) continue;
 
@@ -82,16 +83,16 @@ export class NpmParser implements Parser {
           name,
           version,
           supplier: 'npm',
-          license: pkgData.license,
+          license: pkg.license,
           purl: `pkg:npm/${name}@${version}`,
-          checksumSha256: pkgData.integrity ? this.extractSha256(pkgData.integrity) : undefined,
-          dependencies: pkgData.dependencies ? Object.keys(pkgData.dependencies) : [],
+          checksumSha256: pkg.integrity ? this.extractSha256(pkg.integrity) : undefined,
+          dependencies: pkg.dependencies ? Object.keys(pkg.dependencies) : [],
           origin: 'npm',
           metadata: {
             ecosystem: 'npm',
-            resolved: pkgData.resolved,
-            dev: pkgData.dev || false,
-            optional: pkgData.optional || false,
+            resolved: pkg.resolved,
+            dev: pkg.dev || false,
+            optional: pkg.optional || false,
           },
         });
       }
@@ -112,25 +113,26 @@ export class NpmParser implements Parser {
   private parseLegacyDependencies(deps: any, components: Component[], prefix = '') {
     for (const [name, depData] of Object.entries(deps)) {
       const fullName = prefix ? `${prefix}/${name}` : name;
+      const dep = depData as any;
       
       components.push({
         name,
-        version: depData.version,
+        version: dep.version,
         supplier: 'npm',
-        purl: `pkg:npm/${name}@${depData.version}`,
-        checksumSha256: depData.integrity ? this.extractSha256(depData.integrity) : undefined,
-        dependencies: depData.requires ? Object.keys(depData.requires) : [],
+        purl: `pkg:npm/${name}@${dep.version}`,
+        checksumSha256: dep.integrity ? this.extractSha256(dep.integrity) : undefined,
+        dependencies: dep.requires ? Object.keys(dep.requires) : [],
         origin: 'npm',
         metadata: {
           ecosystem: 'npm',
-          resolved: depData.resolved,
-          dev: depData.dev || false,
+          resolved: dep.resolved,
+          dev: dep.dev || false,
         },
       });
 
       // Recursively process nested dependencies
-      if (depData.dependencies) {
-        this.parseLegacyDependencies(depData.dependencies, components, fullName);
+      if (dep.dependencies) {
+        this.parseLegacyDependencies(dep.dependencies, components, fullName);
       }
     }
   }
