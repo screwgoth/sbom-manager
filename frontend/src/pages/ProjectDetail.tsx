@@ -14,6 +14,7 @@ import {
   Download,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import PageShell from '../components/PageShell';
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
@@ -100,21 +101,27 @@ export default function ProjectDetail() {
   const project = projectData.project;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center space-x-4">
+    <PageShell
+      title={project.name}
+      description={project.description || 'No description'}
+      actions={
         <Link
           to="/projects"
-          className="p-2 hover:bg-gray-100 rounded-md"
+          className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
         </Link>
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">{project.name}</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            {project.description || 'No description'}
+      }
+      sidebar={
+        <div className="px-6 py-5">
+          <h3 className="text-sm font-semibold text-gray-900">Project Details</h3>
+          <p className="text-sm text-gray-600 mt-2">
+            Use this screen to review and export SBOMs for this project.
           </p>
         </div>
-      </div>
+      }
+    >
 
       {/* Project Info */}
       <div className="bg-white shadow rounded-lg p-6">
@@ -406,6 +413,6 @@ export default function ProjectDetail() {
           </div>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }

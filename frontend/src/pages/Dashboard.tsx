@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import PageShell from '../components/PageShell';
 
 export default function Dashboard() {
   const [vulnerabilitySummary, setVulnerabilitySummary] = useState<any>(null);
@@ -101,14 +102,10 @@ export default function Dashboard() {
   }, [sbomsData]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-        <p className="mt-1 text-sm text-gray-500">
-          Overview of your SBOM projects, vulnerabilities, and license compliance
-        </p>
-      </div>
-
+    <PageShell
+      title="Dashboard"
+      description="Overview of your SBOM projects, vulnerabilities, and license compliance"
+    >
       {/* Health Status */}
       <div className="bg-white shadow rounded-lg p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">System Status</h3>
@@ -372,6 +369,6 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }

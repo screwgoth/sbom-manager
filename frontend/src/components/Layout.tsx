@@ -1,12 +1,14 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, FolderOpen, Shield, Scan, LogOut, User } from 'lucide-react';
+import { Home, FolderOpen, Shield, Scan, LogOut, User, ChevronDown } from 'lucide-react';
 import { authApi } from '../lib/api';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
@@ -15,11 +17,23 @@ export default function Layout() {
     }
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const isActive = (path: string) => {
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
   const handleLogout = () => {
+    setMenuOpen(false);
     authApi.logout();
     navigate('/login');
   };
@@ -70,19 +84,37 @@ export default function Layout() {
               </Link>
               
               <div className="border-l border-gray-300 h-6 mx-2"></div>
-              
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center px-3 py-2 text-sm text-gray-700">
-                  <User className="inline-block w-4 h-4 mr-1" />
-                  {user?.name || user?.email || 'User'}
-                </div>
+
+              <div className="relative" ref={menuRef}>
                 <button
-                  onClick={handleLogout}
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-red-50 hover:text-red-700"
+                  type="button"
+                  onClick={() => setMenuOpen((open) => !open)}
+                  className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <LogOut className="inline-block w-4 h-4 mr-1" />
-                  Logout
+                  <User className="inline-block w-5 h-5 mr-2" />
+                  <span className="hidden sm:inline">{user?.name || user?.email || 'User'}</span>
+                  <ChevronDown className="inline-block w-4 h-4 ml-1" />
                 </button>
+
+                {menuOpen && (
+                  <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                    <Link
+                      to="/profile"
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <User className="w-4 h-4 mr-2" />
+                      Profile
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </button>
+                  </div>
+                )}
               </div>
             </nav>
           </div>
