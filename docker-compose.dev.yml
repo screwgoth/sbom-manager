@@ -1,0 +1,72 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sbom-manager-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sbom_user
+      POSTGRES_PASSWORD: sbom_password
+      POSTGRES_DB: sbom_manager
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sbom_user -d sbom_manager"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sbom-network
+
+  backend:
+    image: node:20-alpine
+    container_name: sbom-manager-backend-dev
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - ./backend/uploads:/app/uploads
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATABASE_URL=postgresql://sbom_user:sbom_password@postgres:5432/sbom_manager
+      - JWT_SECRET=${JWT_SECRET:-change-this-secret-key-in-development}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "npm install && npm run db:migrate && npm run dev"
+    networks:
+      - sbom-network
+
+  frontend:
+    image: node:20-alpine
+    container_name: sbom-manager-frontend-dev
+    restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      # In docker dev mode, the frontend bundle runs in the browser, so use the host's API URL.
+      - VITE_API_URL=http://localhost:3000/api
+      - HOST=0.0.0.0
+    depends_on:
+      backend:
+        condition: service_started
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    networks:
+      - sbom-network
+
+networks:
+  sbom-network:
+    driver: bridge
+
+volumes:
+  postgres_data_dev:
+    driver: local

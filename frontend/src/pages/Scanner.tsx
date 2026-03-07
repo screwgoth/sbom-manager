@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { projectsApi } from '../lib/api';
+import PageShell from '../components/PageShell';
 
 // Supported dependency file patterns
 const SUPPORTED_FILES = {
@@ -205,18 +206,23 @@ export default function Scanner() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">SBOM Scanner</h1>
-        <p className="text-gray-600 mt-2">
-          Scan project dependencies and generate Software Bill of Materials
-        </p>
-        <div className="mt-3 inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium">
-          <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Multi-file upload supported
+    <PageShell
+      title="SBOM Scanner"
+      description="Scan project dependencies and generate a Software Bill of Materials"
+      sidebar={
+        <div className="px-6 py-5">
+          <h3 className="text-sm font-semibold text-gray-900">Quick tip</h3>
+          <p className="mt-2 text-sm text-gray-600">
+            Upload dependency manifest files or use a directory scan for CI-friendly automation.
+          </p>
         </div>
+      }
+    >
+      <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium">
+        <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Multi-file upload supported
       </div>
 
       {/* Scan Mode Selection */}
@@ -603,6 +609,6 @@ export default function Scanner() {
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }

@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { projectsApi } from '../lib/api';
 import { Plus, FolderOpen, Trash2 } from 'lucide-react';
+import PageShell from '../components/PageShell';
 
 export default function Projects() {
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -47,14 +48,10 @@ export default function Projects() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Projects</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Manage your SBOM projects
-          </p>
-        </div>
+    <PageShell
+      title="Projects"
+      description="Manage your SBOM projects"
+      actions={
         <button
           onClick={() => setShowCreateForm(!showCreateForm)}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
@@ -62,7 +59,16 @@ export default function Projects() {
           <Plus className="h-4 w-4 mr-2" />
           New Project
         </button>
-      </div>
+      }
+      sidebar={
+        <div className="px-6 py-5">
+          <h3 className="text-sm font-semibold text-gray-900">Tips</h3>
+          <p className="mt-2 text-sm text-gray-600">
+            Create a separate project for each application you want to scan. Each project can contain multiple SBOMs.
+          </p>
+        </div>
+      }
+    >
 
       {/* Create Project Form */}
       {showCreateForm && (
@@ -152,6 +158,6 @@ export default function Projects() {
           </div>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }

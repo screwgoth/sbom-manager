@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
 import Scanner from './pages/Scanner';
+import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
@@ -51,6 +52,7 @@ function App() {
             <Route path="projects" element={<Projects />} />
             <Route path="projects/:id" element={<ProjectDetail />} />
             <Route path="scanner" element={<Scanner />} />
+            <Route path="profile" element={<Profile />} />
           </Route>
 
           {/* Catch all */}
