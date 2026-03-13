@@ -73,6 +73,9 @@ function convertToCSV(data: any) {
     'License',
     'Supplier',
     'PURL',
+    'CPE',
+    'SWID',
+    'Dependency Relationship',
     'Description',
     'CVE ID',
     'Severity',
@@ -93,6 +96,9 @@ function convertToCSV(data: any) {
           component.license || '',
           component.supplier || '',
           component.purl || '',
+          component.cpe || '',
+          component.swid || '',
+          component.dependencyRelationship || '',
           component.description || '',
           vuln.cveId || '',
           vuln.severity || '',
@@ -110,6 +116,9 @@ function convertToCSV(data: any) {
         component.license || '',
         component.supplier || '',
         component.purl || '',
+        component.cpe || '',
+        component.swid || '',
+        component.dependencyRelationship || '',
         component.description || '',
         '',
         '',
@@ -173,6 +182,9 @@ exportRouter.get('/sbom/:id/excel', async (c) => {
             'License': component.license || '',
             'Supplier': component.supplier || '',
             'PURL': component.purl || '',
+            'CPE': component.cpe || '',
+            'SWID': component.swid || '',
+            'Dependency Relationship': component.dependencyRelationship || '',
             'Description': component.description || '',
             'CVE ID': vuln.cveId || '',
             'Severity': vuln.severity || '',
@@ -189,6 +201,9 @@ exportRouter.get('/sbom/:id/excel', async (c) => {
           'License': component.license || '',
           'Supplier': component.supplier || '',
           'PURL': component.purl || '',
+          'CPE': component.cpe || '',
+          'SWID': component.swid || '',
+          'Dependency Relationship': component.dependencyRelationship || '',
           'Description': component.description || '',
           'CVE ID': '',
           'Severity': '',
@@ -210,6 +225,9 @@ exportRouter.get('/sbom/:id/excel', async (c) => {
       { wch: 20 }, // License
       { wch: 20 }, // Supplier
       { wch: 40 }, // PURL
+      { wch: 40 }, // CPE
+      { wch: 30 }, // SWID
+      { wch: 25 }, // Dependency Relationship
       { wch: 40 }, // Description
       { wch: 18 }, // CVE ID
       { wch: 12 }, // Severity
@@ -282,6 +300,9 @@ exportRouter.get('/sbom/:id/json', async (c) => {
         license: comp.license,
         supplier: comp.supplier,
         purl: comp.purl,
+        cpe: comp.cpe,
+        swid: comp.swid,
+        dependencyRelationship: comp.dependencyRelationship,
         description: comp.description,
         vulnerabilities: comp.vulnerabilities.map((v) => ({
           cveId: v.cveId,
@@ -354,15 +375,23 @@ exportRouter.get('/sbom/:id/spdx', async (c) => {
             },
           ],
         }),
-        externalRefs: comp.purl
-          ? [
-              {
-                referenceCategory: 'PACKAGE-MANAGER',
-                referenceType: 'purl',
-                referenceLocator: comp.purl,
-              },
-            ]
-          : [],
+        externalRefs: [
+          ...(comp.purl ? [{
+            referenceCategory: 'PACKAGE-MANAGER',
+            referenceType: 'purl',
+            referenceLocator: comp.purl,
+          }] : []),
+          ...(comp.cpe ? [{
+            referenceCategory: 'SECURITY',
+            referenceType: 'cpe23Type',
+            referenceLocator: comp.cpe,
+          }] : []),
+          ...(comp.swid ? [{
+            referenceCategory: 'PACKAGE-MANAGER',
+            referenceType: 'swid',
+            referenceLocator: comp.swid,
+          }] : []),
+        ],
       })),
       relationships: [
         {
@@ -429,6 +458,7 @@ exportRouter.get('/sbom/:id/cyclonedx', async (c) => {
         version: comp.version,
         ...(comp.supplier && { supplier: { name: comp.supplier } }),
         ...(comp.purl && { purl: comp.purl }),
+        ...(comp.cpe && { cpe: comp.cpe }),
         ...(comp.description && { description: comp.description }),
         ...(comp.license && {
           licenses: [
@@ -445,6 +475,18 @@ exportRouter.get('/sbom/:id/cyclonedx', async (c) => {
               alg: 'SHA-256',
               content: comp.checksumSha256,
             },
+          ],
+        }),
+        ...((comp.swid || comp.dependencyRelationship) && {
+          properties: [
+            ...(comp.swid ? [{
+              name: 'cert-in:swid',
+              value: comp.swid,
+            }] : []),
+            ...(comp.dependencyRelationship ? [{
+              name: 'cert-in:dependencyRelationship',
+              value: comp.dependencyRelationship,
+            }] : []),
           ],
         }),
       })),

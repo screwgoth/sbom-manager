@@ -6,6 +6,9 @@ export interface Component {
   supplier?: string;
   license?: string;
   purl?: string;
+  cpe?: string;
+  swid?: string;
+  dependencyRelationship?: string;
   checksumSha256?: string;
   dependencies?: string[];
   metadata?: Record<string, any>;
