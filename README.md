@@ -24,6 +24,7 @@ A comprehensive web-based application for generating, managing, and analyzing So
 - **File Validation**: Real-time validation and ecosystem detection for uploaded files
 - **SPDX 2.3 Compliant**: Full specification support with validation
 - **CERT-In Compliance**: All 21 minimum data fields included
+- **🆕 Auto-Enrichment**: Automatic CPE, PURL, SWID, and dependency relationship population via NVD API
 - **Automatic Scanning**: Background vulnerability scanning after SBOM generation
 
 ### ✅ Vulnerability Tracking

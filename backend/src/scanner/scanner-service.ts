@@ -5,6 +5,7 @@ import { SPDXGenerator } from './generators/spdx';
 import { Component, Ecosystem, ScanResult } from './types';
 import { db, sboms, components } from '../db';
 import { scanSBOMForVulnerabilities } from '../services/vulnerability-service';
+import { EnrichmentService } from '../services/enrichment-service';
 
 export interface ScanOptions {
   projectId: string;
@@ -15,9 +16,11 @@ export interface ScanOptions {
 
 export class ScannerService {
   private spdxGenerator: SPDXGenerator;
+  private enrichmentService: EnrichmentService;
 
   constructor() {
     this.spdxGenerator = new SPDXGenerator();
+    this.enrichmentService = new EnrichmentService();
   }
 
   /**
@@ -41,6 +44,7 @@ export class ScannerService {
     const filesProcessed: Array<{ fileName: string; ecosystem: string; componentCount: number }> = [];
     const ecosystemsSet = new Set<string>();
     let detectedEcosystem: Ecosystem = Ecosystem.UNKNOWN;
+    let lockFileData: any = null;
 
     // Parse each file
     for (const filePath of filePaths) {
@@ -68,6 +72,11 @@ export class ScannerService {
         
         ecosystemsSet.add(parser.ecosystem);
         detectedEcosystem = parser.ecosystem;
+
+        // Store lock file data for dependency relationship analysis
+        if (fileName.includes('lock') || fileName.includes('Pipfile.lock')) {
+          lockFileData = JSON.parse(content);
+        }
       } catch (error) {
         console.error(`Error parsing ${fileName}:`, error);
         throw new Error(`Failed to parse ${fileName}: ${error}`);
@@ -75,7 +84,21 @@ export class ScannerService {
     }
 
     // Deduplicate components by name@version
-    const uniqueComponents = this.deduplicateComponents(allComponents);
+    let uniqueComponents = this.deduplicateComponents(allComponents);
+
+    // Enrich components with CPE, PURL, SWID, and dependency relationships
+    console.log(`[Scanner] Enriching ${uniqueComponents.length} components...`);
+    try {
+      uniqueComponents = await this.enrichmentService.enrichComponents(
+        uniqueComponents,
+        detectedEcosystem,
+        lockFileData,
+        options.projectName
+      );
+      console.log('[Scanner] Component enrichment completed');
+    } catch (error) {
+      console.error('[Scanner] Enrichment failed, continuing with unenriched data:', error);
+    }
 
     // Generate SPDX SBOM
     const spdxDoc = this.spdxGenerator.generateSPDX(
