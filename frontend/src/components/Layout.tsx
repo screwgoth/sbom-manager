@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, FolderOpen, Shield, Scan, LogOut, User, Menu, X } from 'lucide-react';
+import { Home, FolderOpen, Shield, LogOut, User, Menu, X } from 'lucide-react';
 import { authApi } from '../lib/api';
 import { useState, useEffect } from 'react';
 
@@ -25,48 +25,68 @@ export default function Layout() {
     navigate('/login');
   };
 
-  const navItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: Home },
-    { path: '/projects', label: 'Projects', icon: FolderOpen },
-    { path: '/scanner', label: 'Scanner', icon: Scan },
+  // Navigation structure with sections like the reference
+  const navSections = [
+    {
+      label: 'OVERVIEW',
+      items: [
+        { path: '/dashboard', label: 'Dashboard', icon: Home },
+        { path: '/projects', label: 'Projects', icon: FolderOpen },
+      ],
+    },
+    {
+      label: 'AUDIT',
+      items: [
+        { path: '/scanner', label: 'Vulnerability Audit', icon: Shield },
+      ],
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 flex">
+    <div className="min-h-screen bg-navy-950 flex">
       {/* Sidebar - Desktop */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-gray-800 border-r border-gray-700">
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-navy-900 border-r border-navy-600">
         {/* Logo */}
-        <div className="flex items-center h-16 px-6 border-b border-gray-700">
-          <Shield className="h-8 w-8 text-blue-500" />
+        <div className="flex items-center h-16 px-6 border-b border-navy-600">
+          <Shield className="h-8 w-8 text-blue-400" />
           <h1 className="ml-3 text-lg font-bold text-white">SBOM Manager</h1>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-2">
-          {navItems.map(({ path, label, icon: Icon }) => (
-            <Link
-              key={path}
-              to={path}
-              className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                isActive(path)
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              }`}
-            >
-              <Icon className="h-5 w-5 mr-3" />
-              {label}
-            </Link>
+        {/* Navigation with sections */}
+        <nav className="flex-1 px-3 py-6 space-y-6 overflow-y-auto">
+          {navSections.map((section) => (
+            <div key={section.label}>
+              <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                {section.label}
+              </h3>
+              <div className="space-y-1">
+                {section.items.map(({ path, label, icon: Icon }) => (
+                  <Link
+                    key={path}
+                    to={path}
+                    className={`flex items-center px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150 ${
+                      isActive(path)
+                        ? 'bg-blue-600 text-white shadow-lg'
+                        : 'text-gray-300 hover:bg-navy-800 hover:text-white'
+                    }`}
+                  >
+                    <Icon className="h-5 w-5 mr-3" />
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           ))}
         </nav>
 
         {/* User Section */}
-        <div className="border-t border-gray-700 p-4">
+        <div className="border-t border-navy-600 p-3">
           <Link
             to="/profile"
-            className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors mb-2 ${
+            className={`flex items-center px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150 mb-1 ${
               isActive('/profile')
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                ? 'bg-blue-600 text-white shadow-lg'
+                : 'text-gray-300 hover:bg-navy-800 hover:text-white'
             }`}
           >
             <User className="h-5 w-5 mr-3" />
@@ -74,7 +94,7 @@ export default function Layout() {
           </Link>
           <button
             onClick={handleLogout}
-            className="flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+            className="flex items-center w-full px-3 py-2.5 rounded-md text-sm font-medium text-gray-300 hover:bg-navy-800 hover:text-white transition-all duration-150"
           >
             <LogOut className="h-5 w-5 mr-3" />
             Logout
@@ -92,11 +112,11 @@ export default function Layout() {
           />
 
           {/* Sidebar */}
-          <aside className="fixed inset-y-0 left-0 w-64 bg-gray-800 border-r border-gray-700 z-50 lg:hidden">
+          <aside className="fixed inset-y-0 left-0 w-64 bg-navy-900 border-r border-navy-600 z-50 lg:hidden">
             {/* Logo */}
-            <div className="flex items-center justify-between h-16 px-6 border-b border-gray-700">
+            <div className="flex items-center justify-between h-16 px-6 border-b border-navy-600">
               <div className="flex items-center">
-                <Shield className="h-8 w-8 text-blue-500" />
+                <Shield className="h-8 w-8 text-blue-400" />
                 <h1 className="ml-3 text-lg font-bold text-white">SBOM Manager</h1>
               </div>
               <button
@@ -107,34 +127,43 @@ export default function Layout() {
               </button>
             </div>
 
-            {/* Navigation */}
-            <nav className="flex-1 px-4 py-6 space-y-2">
-              {navItems.map(({ path, label, icon: Icon }) => (
-                <Link
-                  key={path}
-                  to={path}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                    isActive(path)
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                  }`}
-                >
-                  <Icon className="h-5 w-5 mr-3" />
-                  {label}
-                </Link>
+            {/* Navigation with sections */}
+            <nav className="flex-1 px-3 py-6 space-y-6 overflow-y-auto">
+              {navSections.map((section) => (
+                <div key={section.label}>
+                  <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                    {section.label}
+                  </h3>
+                  <div className="space-y-1">
+                    {section.items.map(({ path, label, icon: Icon }) => (
+                      <Link
+                        key={path}
+                        to={path}
+                        onClick={() => setSidebarOpen(false)}
+                        className={`flex items-center px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150 ${
+                          isActive(path)
+                            ? 'bg-blue-600 text-white shadow-lg'
+                            : 'text-gray-300 hover:bg-navy-800 hover:text-white'
+                        }`}
+                      >
+                        <Icon className="h-5 w-5 mr-3" />
+                        {label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               ))}
             </nav>
 
             {/* User Section */}
-            <div className="border-t border-gray-700 p-4">
+            <div className="border-t border-navy-600 p-3">
               <Link
                 to="/profile"
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors mb-2 ${
+                className={`flex items-center px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-150 mb-1 ${
                   isActive('/profile')
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'text-gray-300 hover:bg-navy-800 hover:text-white'
                 }`}
               >
                 <User className="h-5 w-5 mr-3" />
@@ -145,7 +174,7 @@ export default function Layout() {
                   setSidebarOpen(false);
                   handleLogout();
                 }}
-                className="flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+                className="flex items-center w-full px-3 py-2.5 rounded-md text-sm font-medium text-gray-300 hover:bg-navy-800 hover:text-white transition-all duration-150"
               >
                 <LogOut className="h-5 w-5 mr-3" />
                 Logout
@@ -158,7 +187,7 @@ export default function Layout() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Mobile Header */}
-        <header className="lg:hidden bg-gray-800 border-b border-gray-700">
+        <header className="lg:hidden bg-navy-900 border-b border-navy-600">
           <div className="flex items-center justify-between h-16 px-4">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -167,7 +196,7 @@ export default function Layout() {
               <Menu className="h-6 w-6" />
             </button>
             <div className="flex items-center">
-              <Shield className="h-8 w-8 text-blue-500" />
+              <Shield className="h-8 w-8 text-blue-400" />
               <h1 className="ml-3 text-lg font-bold text-white">SBOM Manager</h1>
             </div>
             <div className="w-6" /> {/* Spacer for centering */}
@@ -175,14 +204,14 @@ export default function Layout() {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 w-full">
+        <main className="flex-1 w-full bg-navy-950">
           <Outlet />
         </main>
 
         {/* Footer */}
-        <footer className="bg-gray-800 border-t border-gray-700">
+        <footer className="bg-navy-900 border-t border-navy-600">
           <div className="px-4 sm:px-6 lg:px-8 py-4">
-            <p className="text-center text-sm text-gray-400">
+            <p className="text-center text-sm text-gray-500">
               SBOM Manager v1.0.0 - CERT-In Compliant
             </p>
           </div>

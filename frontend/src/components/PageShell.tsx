@@ -25,22 +25,25 @@ export default function PageShell({
     <div className={containerClass}>
       <div className="flex flex-col lg:flex-row lg:items-start gap-6 py-8">
         <main className="flex-1 space-y-6">
-          <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 p-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <h1 className="text-2xl font-semibold text-white">{title}</h1>
-                {description && <p className="mt-1 text-sm text-gray-400">{description}</p>}
+          {/* Only show header card if title or description exists */}
+          {(title || description) && (
+            <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 p-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl font-semibold text-white">{title}</h1>
+                  {description && <p className="mt-1 text-sm text-gray-400">{description}</p>}
+                </div>
+                {actions && <div className="flex items-center gap-2">{actions}</div>}
               </div>
-              {actions && <div className="flex items-center gap-2">{actions}</div>}
             </div>
-          </div>
+          )}
 
           {children}
         </main>
 
         {sidebar && (
           <aside className="w-full lg:w-80">
-            <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 overflow-hidden">
+            <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 overflow-hidden">
               {sidebar}
             </div>
           </aside>

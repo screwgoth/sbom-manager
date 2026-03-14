@@ -13,12 +13,13 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #111827; /* gray-900 */
-  color: #f9fafb; /* gray-50 */
+  background-color: #0f1419; /* navy-950 - matching reference design */
+  color: #f9fafb;
 }
 
 #root {
   min-height: 100vh;
+  background-color: #0f1419; /* navy-950 */
 }
 
 code {
