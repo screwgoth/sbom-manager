@@ -114,7 +114,7 @@ export default function ProjectDetail() {
   };
 
   if (projectLoading) {
-    return <div className="text-center text-gray-400 p-8">Loading project...</div>;
+    return <div className="text-center text-text-secondary p-8">Loading project...</div>;
   }
 
   if (!projectData?.project) {
@@ -130,7 +130,7 @@ export default function ProjectDetail() {
       actions={
         <Link
           to="/projects"
-          className="inline-flex items-center px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 bg-navy-700 hover:bg-gray-600"
+          className="inline-flex items-center px-4 py-2 border border-border rounded-lg shadow-sm text-3xl font-medium text-text-secondary bg-bg-tertiary hover:bg-gray-600"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
@@ -138,8 +138,8 @@ export default function ProjectDetail() {
       }
       sidebar={
         <div className="px-6 py-5">
-          <h3 className="text-sm font-semibold text-white">Project Details</h3>
-          <p className="text-sm text-gray-400 mt-2">
+          <h3 className="text-3xl font-semibold text-text-primary">Project Details</h3>
+          <p className="text-3xl text-text-secondary mt-2">
             Use this screen to review and export SBOMs for this project.
           </p>
         </div>
@@ -147,28 +147,28 @@ export default function ProjectDetail() {
     >
 
       {/* Project Info */}
-      <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 p-6">
-        <h3 className="text-lg font-medium text-white mb-4">Project Information</h3>
-        <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="bg-bg-card shadow-lg rounded-xl border border-borderp-8">
+        <h3 className="text-3xl font-medium text-text-primary mb-8">Project Information</h3>
+        <dl className="grid grid-cols-1 gap-8 sm:grid-cols-2">
           <div>
-            <dt className="text-sm font-medium text-gray-400">Project ID</dt>
-            <dd className="mt-1 text-sm text-gray-300 font-mono text-xs">{project.id}</dd>
+            <dt className="text-3xl font-medium text-text-secondary">Project ID</dt>
+            <dd className="mt-1 text-3xl text-text-secondary font-mono text-xs">{project.id}</dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-400">Created</dt>
-            <dd className="mt-1 text-sm text-gray-300">
+            <dt className="text-3xl font-medium text-text-secondary">Created</dt>
+            <dd className="mt-1 text-3xl text-text-secondary">
               {new Date(project.createdAt).toLocaleString()}
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-400">Last Updated</dt>
-            <dd className="mt-1 text-sm text-gray-300">
+            <dt className="text-3xl font-medium text-text-secondary">Last Updated</dt>
+            <dd className="mt-1 text-3xl text-text-secondary">
               {new Date(project.updatedAt).toLocaleString()}
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-400">Total SBOMs</dt>
-            <dd className="mt-1 text-sm text-gray-300">
+            <dt className="text-3xl font-medium text-text-secondary">Total SBOMs</dt>
+            <dd className="mt-1 text-3xl text-text-secondary">
               {sbomsData?.sboms?.length || 0}
             </dd>
           </div>
@@ -176,30 +176,30 @@ export default function ProjectDetail() {
       </div>
 
       {/* SBOMs List */}
-      <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium text-white">SBOMs</h3>
+      <div className="bg-bg-card shadow-lg rounded-xl border border-borderp-8">
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-3xl font-medium text-text-primary">SBOMs</h3>
           <button 
             onClick={() => navigate('/scanner')}
-            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+            className="px-4 py-2 border border-transparent rounded-lg shadow-sm text-3xl font-medium text-text-primary bg-accent-blue hover:bg-accent-blue-hover"
           >
             Generate New SBOM
           </button>
         </div>
         {sbomsLoading ? (
-          <p className="text-gray-400">Loading SBOMs...</p>
+          <p className="text-text-secondary">Loading SBOMs...</p>
         ) : sbomsData?.sboms?.length > 0 ? (
           <ul className="divide-y divide-gray-700">
             {sbomsData.sboms.map((sbom: any) => (
               <li key={sbom.id} className="py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <FileText className="h-8 w-8 text-blue-400" />
+                    <FileText className="h-8 w-8 text-accent-blue" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-white">
+                      <p className="text-3xl font-medium text-text-primary">
                         Version {sbom.version} ({sbom.format.toUpperCase()})
                       </p>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-3xl text-text-secondary">
                         Created {new Date(sbom.createdAt).toLocaleString()}
                         {sbom.author && ` by ${sbom.author}`}
                       </p>
@@ -211,7 +211,7 @@ export default function ProjectDetail() {
                         scanVulnerabilitiesMutation.mutate(sbom.id);
                       }}
                       disabled={scanVulnerabilitiesMutation.isPending}
-                      className="px-3 py-1 text-sm bg-red-900/30 text-red-300 rounded hover:bg-red-900/50 disabled:opacity-50 flex items-center border border-red-700"
+                      className="px-3 py-1 text-3xl bg-red-900/30 text-red-300 rounded hover:bg-red-900/50 disabled:opacity-50 flex items-center border border-red-700"
                     >
                       {scanVulnerabilitiesMutation.isPending ? (
                         <>
@@ -230,7 +230,7 @@ export default function ProjectDetail() {
                     <div className="relative" ref={(el) => { dropdownRef.current[sbom.id] = el; }}>
                       <button
                         onClick={() => setOpenExportDropdown(openExportDropdown === sbom.id ? null : sbom.id)}
-                        className="px-3 py-1 text-sm bg-green-900/30 text-green-300 rounded hover:bg-green-900/50 flex items-center border border-green-700"
+                        className="px-3 py-1 text-3xl bg-green-900/30 text-green-300 rounded hover:bg-green-900/50 flex items-center border border-green-700"
                       >
                         <Download className="h-4 w-4 mr-1" />
                         Export
@@ -238,42 +238,42 @@ export default function ProjectDetail() {
                       </button>
                       
                       {openExportDropdown === sbom.id && (
-                        <div className="absolute right-0 mt-1 w-56 bg-navy-800 rounded-md shadow-xl border border-gray-600 z-50">
+                        <div className="absolute right-0 mt-1 w-56 bg-bg-card rounded-lg shadow-xl border border-border z-50">
                           <div className="py-1">
-                            <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b border-navy-600">
+                            <div className="px-4 py-2 text-xs font-semibold text-text-secondary uppercase border-b border-border">
                               Standard Formats
                             </div>
                             <button
                               onClick={() => handleExport(sbom.id, exportApi.downloadCSV)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-navy-700 transition-colors"
+                              className="block w-full text-left px-4 py-2 text-3xl text-text-secondary hover:bg-bg-tertiary transition-colors"
                             >
                               📄 CSV
                             </button>
                             <button
                               onClick={() => handleExport(sbom.id, exportApi.downloadExcel)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-navy-700 transition-colors"
+                              className="block w-full text-left px-4 py-2 text-3xl text-text-secondary hover:bg-bg-tertiary transition-colors"
                             >
                               📊 Excel (.xlsx)
                             </button>
                             <button
                               onClick={() => handleExport(sbom.id, exportApi.downloadJSON)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-navy-700 transition-colors"
+                              className="block w-full text-left px-4 py-2 text-3xl text-text-secondary hover:bg-bg-tertiary transition-colors"
                             >
                               📦 JSON
                             </button>
-                            <div className="border-t border-navy-600 my-1"></div>
-                            <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b border-navy-600">
+                            <div className="border-t border-border my-1"></div>
+                            <div className="px-4 py-2 text-xs font-semibold text-text-secondary uppercase border-b border-border">
                               SBOM Formats
                             </div>
                             <button
                               onClick={() => handleExport(sbom.id, exportApi.downloadSPDX)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-navy-700 transition-colors"
+                              className="block w-full text-left px-4 py-2 text-3xl text-text-secondary hover:bg-bg-tertiary transition-colors"
                             >
                               🔒 SPDX 2.3
                             </button>
                             <button
                               onClick={() => handleExport(sbom.id, exportApi.downloadCycloneDX)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-navy-700 transition-colors"
+                              className="block w-full text-left px-4 py-2 text-3xl text-text-secondary hover:bg-bg-tertiary transition-colors"
                             >
                               🔄 CycloneDX 1.5
                             </button>
@@ -284,7 +284,7 @@ export default function ProjectDetail() {
                     
                     <button
                       onClick={() => setSelectedSbomId(selectedSbomId === sbom.id ? null : sbom.id)}
-                      className="px-3 py-1 text-sm bg-blue-900/30 text-blue-300 rounded hover:bg-blue-900/50 border border-blue-700"
+                      className="px-3 py-1 text-3xl bg-blue-900/30 text-blue-300 rounded hover:bg-blue-900/50 border border-blue-700"
                     >
                       {selectedSbomId === sbom.id ? 'Hide Details' : 'View Details'}
                     </button>
@@ -293,21 +293,21 @@ export default function ProjectDetail() {
                 
                 {/* SBOM Details */}
                 {selectedSbomId === sbom.id && (
-                  <div className="mt-6 space-y-6">
+                  <div className="mt-8 space-y-8">
                     {/* Vulnerability Summary */}
                     {loadingSummaries ? (
                       <div className="flex items-center justify-center py-4">
-                        <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
-                        <span className="ml-2 text-gray-400">Loading analysis...</span>
+                        <Loader2 className="h-6 w-6 animate-spin text-text-tertiary" />
+                        <span className="ml-2 text-text-secondary">Loading analysis...</span>
                       </div>
                     ) : (
                       <>
                         {/* Vulnerabilities */}
                         {vulnerabilitySummary && (
-                          <div className="bg-navy-700/50 rounded-lg p-4 border border-gray-600">
+                          <div className="bg-bg-tertiary/50 rounded-xlp-6 border border-border">
                             <div className="flex items-center mb-3">
                               <Shield className="h-5 w-5 text-red-400 mr-2" />
-                              <h4 className="font-medium text-white">Vulnerability Summary</h4>
+                              <h4 className="font-medium text-text-primary">Vulnerability Summary</h4>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                               <div className="bg-red-900/30 rounded px-3 py-2 border border-red-700">
@@ -315,35 +315,35 @@ export default function ProjectDetail() {
                                   <span className="text-xs text-red-300">Critical</span>
                                   <XCircle className="h-4 w-4 text-red-400" />
                                 </div>
-                                <p className="text-xl font-bold text-red-100">{vulnerabilitySummary.critical}</p>
+                                <p className="text-3xl font-bold text-red-100">{vulnerabilitySummary.critical}</p>
                               </div>
                               <div className="bg-orange-900/30 rounded px-3 py-2 border border-orange-700">
                                 <div className="flex items-center justify-between">
                                   <span className="text-xs text-orange-300">High</span>
                                   <AlertCircle className="h-4 w-4 text-orange-400" />
                                 </div>
-                                <p className="text-xl font-bold text-orange-100">{vulnerabilitySummary.high}</p>
+                                <p className="text-3xl font-bold text-orange-100">{vulnerabilitySummary.high}</p>
                               </div>
                               <div className="bg-yellow-900/30 rounded px-3 py-2 border border-yellow-700">
                                 <div className="flex items-center justify-between">
                                   <span className="text-xs text-yellow-300">Medium</span>
                                   <AlertTriangle className="h-4 w-4 text-yellow-400" />
                                 </div>
-                                <p className="text-xl font-bold text-yellow-100">{vulnerabilitySummary.medium}</p>
+                                <p className="text-3xl font-bold text-yellow-100">{vulnerabilitySummary.medium}</p>
                               </div>
                               <div className="bg-blue-900/30 rounded px-3 py-2 border border-blue-700">
                                 <div className="flex items-center justify-between">
                                   <span className="text-xs text-blue-300">Low</span>
-                                  <AlertCircle className="h-4 w-4 text-blue-400" />
+                                  <AlertCircle className="h-4 w-4 text-accent-blue" />
                                 </div>
-                                <p className="text-xl font-bold text-blue-100">{vulnerabilitySummary.low}</p>
+                                <p className="text-3xl font-bold text-blue-100">{vulnerabilitySummary.low}</p>
                               </div>
-                              <div className="bg-navy-700 rounded px-3 py-2 border border-gray-600">
+                              <div className="bg-bg-tertiary rounded px-3 py-2 border border-border">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-xs text-gray-300">Total</span>
-                                  <Shield className="h-4 w-4 text-gray-400" />
+                                  <span className="text-xs text-text-secondary">Total</span>
+                                  <Shield className="h-4 w-4 text-text-secondary" />
                                 </div>
-                                <p className="text-xl font-bold text-white">{vulnerabilitySummary.total}</p>
+                                <p className="text-3xl font-bold text-text-primary">{vulnerabilitySummary.total}</p>
                               </div>
                             </div>
                           </div>
@@ -351,27 +351,27 @@ export default function ProjectDetail() {
 
                         {/* License Summary */}
                         {licenseSummary && (
-                          <div className="bg-navy-700/50 rounded-lg p-4 border border-gray-600">
+                          <div className="bg-bg-tertiary/50 rounded-xlp-6 border border-border">
                             <div className="flex items-center mb-3">
                               <Scale className="h-5 w-5 text-purple-400 mr-2" />
-                              <h4 className="font-medium text-white">License Summary</h4>
+                              <h4 className="font-medium text-text-primary">License Summary</h4>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
                               <div className="bg-green-900/30 rounded px-3 py-2 border border-green-700">
                                 <span className="text-xs text-green-300">Low Risk</span>
-                                <p className="text-xl font-bold text-green-100">{licenseSummary.riskDistribution.low}</p>
+                                <p className="text-3xl font-bold text-green-100">{licenseSummary.riskDistribution.low}</p>
                               </div>
                               <div className="bg-yellow-900/30 rounded px-3 py-2 border border-yellow-700">
                                 <span className="text-xs text-yellow-300">Medium Risk</span>
-                                <p className="text-xl font-bold text-yellow-100">{licenseSummary.riskDistribution.medium}</p>
+                                <p className="text-3xl font-bold text-yellow-100">{licenseSummary.riskDistribution.medium}</p>
                               </div>
                               <div className="bg-red-900/30 rounded px-3 py-2 border border-red-700">
                                 <span className="text-xs text-red-300">High Risk</span>
-                                <p className="text-xl font-bold text-red-100">{licenseSummary.riskDistribution.high}</p>
+                                <p className="text-3xl font-bold text-red-100">{licenseSummary.riskDistribution.high}</p>
                               </div>
-                              <div className="bg-navy-700 rounded px-3 py-2 border border-gray-600">
-                                <span className="text-xs text-gray-300">Unknown</span>
-                                <p className="text-xl font-bold text-white">{licenseSummary.unknownCount}</p>
+                              <div className="bg-bg-tertiary rounded px-3 py-2 border border-border">
+                                <span className="text-xs text-text-secondary">Unknown</span>
+                                <p className="text-3xl font-bold text-text-primary">{licenseSummary.unknownCount}</p>
                               </div>
                             </div>
                             {licenseSummary.policyViolations.length > 0 && (
@@ -388,36 +388,36 @@ export default function ProjectDetail() {
 
                     {/* Components Table */}
                     {componentsLoading ? (
-                      <p className="text-sm text-gray-400">Loading components...</p>
+                      <p className="text-3xl text-text-secondary">Loading components...</p>
                     ) : componentsData?.components?.length > 0 ? (
                       <div>
-                        <h4 className="text-sm font-medium text-gray-300 mb-2">
+                        <h4 className="text-3xl font-medium text-text-secondary mb-2">
                           Components ({componentsData.components.length})
                         </h4>
-                        <div className="bg-navy-800 border border-navy-600 rounded-lg overflow-hidden">
+                        <div className="bg-bg-card border border-border rounded-xl overflow-hidden">
                           <div className="max-h-96 overflow-y-auto">
                             <table className="min-w-full divide-y divide-gray-700">
                               <thead className="bg-gray-750 sticky top-0">
                                 <tr>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Name</th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Version</th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">License</th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Supplier</th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase">Name</th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase">Version</th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase">License</th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-text-secondary uppercase">Supplier</th>
                                 </tr>
                               </thead>
                               <tbody className="divide-y divide-gray-700">
                                 {componentsData.components.map((comp: any) => (
-                                  <tr key={comp.id} className="hover:bg-navy-700/50">
-                                    <td className="px-4 py-2 font-mono text-xs text-white">{comp.name}</td>
-                                    <td className="px-4 py-2 font-mono text-xs text-gray-400">{comp.version}</td>
+                                  <tr key={comp.id} className="hover:bg-bg-tertiary/50">
+                                    <td className="px-4 py-2 font-mono text-xs text-text-primary">{comp.name}</td>
+                                    <td className="px-4 py-2 font-mono text-xs text-text-secondary">{comp.version}</td>
                                     <td className="px-4 py-2 text-xs">
                                       <span className={`px-2 py-1 rounded text-xs ${
-                                        !comp.license ? 'bg-navy-700 text-gray-400' : 'bg-green-900/30 text-green-300 border border-green-700'
+                                        !comp.license ? 'bg-bg-tertiary text-text-secondary' : 'bg-green-900/30 text-green-300 border border-green-700'
                                       }`}>
                                         {comp.license || 'Unknown'}
                                       </span>
                                     </td>
-                                    <td className="px-4 py-2 text-xs text-gray-400">{comp.supplier || 'N/A'}</td>
+                                    <td className="px-4 py-2 text-xs text-text-secondary">{comp.supplier || 'N/A'}</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -426,7 +426,7 @@ export default function ProjectDetail() {
                         </div>
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-400">No components found</p>
+                      <p className="text-3xl text-text-secondary">No components found</p>
                     )}
                   </div>
                 )}
@@ -435,13 +435,13 @@ export default function ProjectDetail() {
           </ul>
         ) : (
           <div className="text-center py-8">
-            <FileText className="h-12 w-12 mx-auto mb-3 text-gray-500" />
-            <p className="text-gray-400 mb-4">
+            <FileText className="h-12 w-12 mx-auto mb-3 text-text-tertiary" />
+            <p className="text-text-secondary mb-8">
               No SBOMs yet. Generate one to get started!
             </p>
             <button 
               onClick={() => navigate('/scanner')}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-accent-blue text-text-primary rounded-lg hover:bg-accent-blue-hover"
             >
               Generate SBOM
             </button>

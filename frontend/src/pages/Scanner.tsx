@@ -211,14 +211,14 @@ export default function Scanner() {
       description="Scan project dependencies and generate a Software Bill of Materials"
       sidebar={
         <div className="px-6 py-5">
-          <h3 className="text-sm font-semibold text-white">Quick tip</h3>
-          <p className="mt-2 text-sm text-gray-600">
+          <h3 className="text-3xl font-semibold text-text-primary">Quick tip</h3>
+          <p className="mt-2 text-3xl text-gray-600">
             Upload dependency manifest files or use a directory scan for CI-friendly automation.
           </p>
         </div>
       }
     >
-      <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium">
+      <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-3xl font-medium">
         <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
@@ -226,15 +226,15 @@ export default function Scanner() {
       </div>
 
       {/* Scan Mode Selection */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-lg font-semibold mb-4">Scan Mode</h2>
-        <div className="flex gap-4">
+      <div className="bg-whitep-8 rounded-xl shadow">
+        <h2 className="text-3xl font-semibold mb-8">Scan Mode</h2>
+        <div className="flex gap-8">
           <button
             onClick={() => setScanMode('upload')}
             className={`px-4 py-2 rounded ${
               scanMode === 'upload'
-                ? 'bg-blue-600 text-white'
-                : 'bg-navy-700 text-gray-300 hover:bg-gray-300'
+                ? 'bg-accent-blue text-text-primary'
+                : 'bg-bg-tertiary text-text-secondary hover:bg-gray-300'
             }`}
           >
             Upload Files
@@ -243,8 +243,8 @@ export default function Scanner() {
             onClick={() => setScanMode('directory')}
             className={`px-4 py-2 rounded ${
               scanMode === 'directory'
-                ? 'bg-blue-600 text-white'
-                : 'bg-navy-700 text-gray-300 hover:bg-gray-300'
+                ? 'bg-accent-blue text-text-primary'
+                : 'bg-bg-tertiary text-text-secondary hover:bg-gray-300'
             }`}
           >
             Scan Directory
@@ -253,11 +253,11 @@ export default function Scanner() {
       </div>
 
       {/* Project Selection */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-lg font-semibold mb-4">Project Information</h2>
-        <div className="space-y-4">
+      <div className="bg-whitep-8 rounded-xl shadow">
+        <h2 className="text-3xl font-semibold mb-8">Project Information</h2>
+        <div className="space-y-8">
           <div>
-            <label className="block text-sm font-medium mb-2">Select Project</label>
+            <label className="block text-3xl font-medium mb-2">Select Project</label>
             <select
               value={projectId}
               onChange={(e) => {
@@ -277,7 +277,7 @@ export default function Scanner() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Project Name</label>
+            <label className="block text-3xl font-medium mb-2">Project Name</label>
             <input
               type="text"
               value={projectName}
@@ -288,7 +288,7 @@ export default function Scanner() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Version</label>
+            <label className="block text-3xl font-medium mb-2">Version</label>
             <input
               type="text"
               value={projectVersion}
@@ -299,7 +299,7 @@ export default function Scanner() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Author (optional)</label>
+            <label className="block text-3xl font-medium mb-2">Author (optional)</label>
             <input
               type="text"
               value={author}
@@ -312,8 +312,8 @@ export default function Scanner() {
       </div>
 
       {/* File Upload or Directory Input */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-lg font-semibold mb-4">
+      <div className="bg-whitep-8 rounded-xl shadow">
+        <h2 className="text-3xl font-semibold mb-8">
           {scanMode === 'upload' ? 'Upload Dependency Files (Multiple Files Supported)' : 'Directory Path'}
         </h2>
 
@@ -325,15 +325,15 @@ export default function Scanner() {
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+              className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
                 isDragging
                   ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-600 hover:border-blue-400 hover:bg-gray-50'
+                  : 'border-border hover:border-blue-400 hover:bg-gray-50'
               }`}
             >
               <div className="space-y-2">
                 <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
+                  className="mx-auto h-12 w-12 text-text-secondary"
                   stroke="currentColor"
                   fill="none"
                   viewBox="0 0 48 48"
@@ -345,10 +345,10 @@ export default function Scanner() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <div className="text-sm text-gray-600">
+                <div className="text-3xl text-gray-600">
                   <span className="font-semibold text-blue-600">Click to upload</span> or drag and drop
                 </div>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-text-secondary">
                   Multiple dependency files supported: package.json, requirements.txt, pom.xml, go.mod, Cargo.toml, etc.
                 </p>
               </div>
@@ -366,9 +366,9 @@ export default function Scanner() {
 
             {/* Selected Files Preview */}
             {selectedFiles.length > 0 && (
-              <div className="mt-6">
+              <div className="mt-8">
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-medium text-gray-300">
+                  <p className="text-3xl font-medium text-text-secondary">
                     Selected Files ({selectedFiles.length})
                   </p>
                   <button
@@ -384,11 +384,11 @@ export default function Scanner() {
                     return (
                       <div
                         key={idx}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded border border-navy-600"
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded border border-border"
                       >
                         <div className="flex items-center space-x-3 flex-1 min-w-0">
                           <svg
-                            className="h-5 w-5 text-gray-400 flex-shrink-0"
+                            className="h-5 w-5 text-text-secondary flex-shrink-0"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -401,10 +401,10 @@ export default function Scanner() {
                             />
                           </svg>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-white truncate">
+                            <p className="text-3xl font-medium text-text-primary truncate">
                               {file.name}
                             </p>
-                            <div className="flex items-center space-x-2 text-xs text-gray-400">
+                            <div className="flex items-center space-x-2 text-xs text-text-secondary">
                               <span>{(file.size / 1024).toFixed(1)} KB</span>
                               <span>•</span>
                               <span className="font-medium text-blue-600 uppercase">
@@ -415,7 +415,7 @@ export default function Scanner() {
                         </div>
                         <button
                           onClick={() => removeFile(idx)}
-                          className="ml-3 p-1 text-gray-400 hover:text-red-600 transition-colors"
+                          className="ml-3 p-1 text-text-secondary hover:text-red-600 transition-colors"
                           title="Remove file"
                         >
                           <svg
@@ -439,7 +439,7 @@ export default function Scanner() {
 
                 {/* Ecosystem Summary */}
                 {selectedFiles.length > 0 && (
-                  <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
+                  <div className="mt-8 p-3 bg-blue-50 rounded border border-blue-200">
                     <p className="text-xs font-medium text-blue-900 mb-1">Detected Ecosystems:</p>
                     <div className="flex flex-wrap gap-2">
                       {Array.from(new Set(selectedFiles.map(f => getFileEcosystem(f.name)))).map(eco => (
@@ -465,7 +465,7 @@ export default function Scanner() {
               className="w-full p-2 border rounded"
               placeholder="/path/to/project"
             />
-            <p className="text-sm text-gray-400 mt-2">
+            <p className="text-3xl text-text-secondary mt-2">
               Enter the full path to the project directory to scan
             </p>
           </div>
@@ -473,11 +473,11 @@ export default function Scanner() {
       </div>
 
       {/* Scan Button */}
-      <div className="flex gap-4">
+      <div className="flex gap-8">
         <button
           onClick={handleScan}
           disabled={scanMutation.isPending}
-          className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="px-6 py-3 bg-accent-blue text-text-primary rounded hover:bg-accent-blue-hover disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           {scanMutation.isPending ? 'Scanning...' : 'Start Scan'}
         </button>
@@ -485,7 +485,7 @@ export default function Scanner() {
         {scanResult && (
           <button
             onClick={handleViewResults}
-            className="px-6 py-3 bg-green-600 text-white rounded hover:bg-green-700"
+            className="px-6 py-3 bg-green-600 text-text-primary rounded hover:bg-green-700"
           >
             View Results
           </button>
@@ -494,7 +494,7 @@ export default function Scanner() {
 
       {/* Error Display */}
       {scanMutation.isError && (
-        <div className="bg-red-50 border border-red-200 p-4 rounded">
+        <div className="bg-red-50 border border-red-200p-6 rounded">
           <p className="text-red-700 font-medium">Scan Failed</p>
           <p className="text-red-600 text-sm">{(scanMutation.error as Error)?.message}</p>
         </div>
@@ -502,9 +502,9 @@ export default function Scanner() {
 
       {/* Results Display */}
       {scanResult && (
-        <div className="bg-green-50 border border-green-200 p-6 rounded-lg">
-          <h2 className="text-lg font-semibold text-green-800 mb-4">Scan Complete! ✓</h2>
-          <div className="space-y-4">
+        <div className="bg-green-50 border border-green-200p-8 rounded-xl">
+          <h2 className="text-3xl font-semibold text-green-800 mb-8">Scan Complete! ✓</h2>
+          <div className="space-y-8">
             <div className="space-y-2 text-sm">
               <p>
                 <span className="font-medium">SBOM ID:</span>{' '}
@@ -523,7 +523,7 @@ export default function Scanner() {
             {/* Files Processed */}
             {scanResult.filesProcessed && scanResult.filesProcessed.length > 0 && (
               <div className="pt-4 border-t border-green-200">
-                <p className="text-sm font-medium text-green-900 mb-3">
+                <p className="text-3xl font-medium text-green-900 mb-3">
                   Files Processed ({scanResult.filesProcessed.length}):
                 </p>
                 <div className="space-y-2">
@@ -547,7 +547,7 @@ export default function Scanner() {
                           />
                         </svg>
                         <div>
-                          <p className="text-sm font-medium text-white">{file.fileName}</p>
+                          <p className="text-3xl font-medium text-text-primary">{file.fileName}</p>
                           <p className="text-xs text-gray-600">
                             <span className="uppercase font-semibold text-green-700">
                               {file.ecosystem}
@@ -566,12 +566,12 @@ export default function Scanner() {
             {/* Ecosystems Summary */}
             {scanResult.ecosystems && scanResult.ecosystems.length > 1 && (
               <div className="pt-4 border-t border-green-200">
-                <p className="text-sm font-medium text-green-900 mb-2">Multiple Ecosystems Detected:</p>
+                <p className="text-3xl font-medium text-green-900 mb-2">Multiple Ecosystems Detected:</p>
                 <div className="flex flex-wrap gap-2">
                   {scanResult.ecosystems.map((eco: string) => (
                     <span
                       key={eco}
-                      className="px-3 py-1 text-sm font-medium bg-green-100 text-green-800 rounded uppercase"
+                      className="px-3 py-1 text-3xl font-medium bg-green-100 text-green-800 rounded uppercase"
                     >
                       {eco}
                     </span>
@@ -584,9 +584,9 @@ export default function Scanner() {
       )}
 
       {/* Ecosystem Support Info */}
-      <div className="bg-blue-50 border border-blue-200 p-6 rounded-lg">
+      <div className="bg-blue-50 border border-blue-200p-8 rounded-xl">
         <h3 className="font-semibold text-blue-900 mb-3">Supported Ecosystems</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
           <div>
             <p className="font-medium text-blue-800">Node.js</p>
             <p className="text-blue-600">package.json, package-lock.json</p>

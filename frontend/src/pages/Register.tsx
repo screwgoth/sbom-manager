@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '../lib/api';
 import { Shield, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -46,33 +47,38 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-navy-950 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-bg-primary flex items-center justify-center py-12 px-6 sm:px-8 lg:px-10">
+      <div className="max-w-md w-full space-y-10">
+        {/* Theme Toggle - Top Right */}
+        <div className="flex justify-end">
+          <ThemeToggle />
+        </div>
+
         <div>
           <div className="flex justify-center">
-            <div className="bg-blue-600 p-4 rounded-full">
-              <Shield className="h-12 w-12 text-white" />
+            <div className="bg-accent-blue p-5 rounded-2xl shadow-lg">
+              <Shield className="h-14 w-14 text-white" />
             </div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-white">
+          <h2 className="mt-8 text-center text-4xl font-bold text-text-primary">
             SBOM Manager
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-400">
+          <p className="mt-3 text-center text-base text-text-secondary">
             Create your account
           </p>
         </div>
 
-        <div className="bg-navy-800 rounded-lg shadow-xl border border-navy-600 p-8">
+        <div className="bg-bg-card rounded-xl shadow-2xl border border-border p-10">
           {error && (
-            <div className="mb-4 bg-red-900/30 border border-red-700 rounded-md p-3 flex items-center">
-              <AlertCircle className="h-5 w-5 text-red-400 mr-2" />
-              <p className="text-sm text-red-200">{error}</p>
+            <div className="mb-6 bg-red-900/30 border border-red-700 rounded-lg p-4 flex items-center">
+              <AlertCircle className="h-6 w-6 text-red-400 mr-3" />
+              <p className="text-base text-red-200">{error}</p>
             </div>
           )}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="name" className="block text-base font-medium text-text-primary mb-2">
                 Full Name (optional)
               </label>
               <input
@@ -81,13 +87,13 @@ export default function Register() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-navy-700 border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg shadow-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue text-base"
                 placeholder="John Doe"
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="email" className="block text-base font-medium text-text-primary mb-2">
                 Email address
               </label>
               <input
@@ -98,13 +104,13 @@ export default function Register() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-navy-700 border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg shadow-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue text-base"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="password" className="block text-base font-medium text-text-primary mb-2">
                 Password
               </label>
               <input
@@ -115,14 +121,14 @@ export default function Register() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-navy-700 border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg shadow-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue text-base"
                 placeholder="••••••••"
               />
-              <p className="mt-1 text-xs text-gray-400">Minimum 6 characters</p>
+              <p className="mt-2 text-sm text-text-tertiary">Minimum 6 characters</p>
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="confirmPassword" className="block text-base font-medium text-text-primary mb-2">
                 Confirm Password
               </label>
               <input
@@ -133,12 +139,12 @@ export default function Register() {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-navy-700 border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="block w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg shadow-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue text-base"
                 placeholder="••••••••"
               />
               {password && confirmPassword && password === confirmPassword && (
-                <div className="mt-1 flex items-center text-xs text-green-400">
-                  <CheckCircle className="h-3 w-3 mr-1" />
+                <div className="mt-2 flex items-center text-sm text-green-400">
+                  <CheckCircle className="h-4 w-4 mr-2" />
                   Passwords match
                 </div>
               )}
@@ -148,7 +154,7 @@ export default function Register() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center items-center py-3.5 px-6 border border-transparent rounded-lg shadow-lg text-base font-medium text-white bg-accent-blue hover:bg-accent-blue-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {loading ? (
                   <>
@@ -162,20 +168,20 @@ export default function Register() {
             </div>
           </form>
 
-          <div className="mt-6">
+          <div className="mt-8">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-navy-600" />
+                <div className="w-full border-t border-border" />
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-navy-800 text-gray-400">Already have an account?</span>
+              <div className="relative flex justify-center text-base">
+                <span className="px-3 bg-bg-card text-text-secondary">Already have an account?</span>
               </div>
             </div>
 
-            <div className="mt-6">
+            <div className="mt-8">
               <Link
                 to="/login"
-                className="w-full flex justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 bg-navy-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="w-full flex justify-center py-3.5 px-6 border border-border rounded-lg shadow-sm text-base font-medium text-text-primary bg-bg-tertiary hover:bg-bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue transition-colors"
               >
                 Sign in instead
               </Link>

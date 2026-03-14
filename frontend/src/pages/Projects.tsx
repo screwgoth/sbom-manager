@@ -71,13 +71,13 @@ export default function Projects() {
       actions={
         <div className="flex items-center gap-2">
           {/* View Toggle */}
-          <div className="flex items-center gap-1 bg-navy-700 rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-bg-tertiary rounded-xl p-1">
             <button
               onClick={() => handleViewModeChange('list')}
               className={`p-2 rounded ${
                 viewMode === 'list'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-accent-blue text-text-primary'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
               title="List View"
             >
@@ -87,8 +87,8 @@ export default function Projects() {
               onClick={() => handleViewModeChange('cards')}
               className={`p-2 rounded ${
                 viewMode === 'cards'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-accent-blue text-text-primary'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
               title="Card View"
             >
@@ -98,7 +98,7 @@ export default function Projects() {
 
           <button
             onClick={() => setShowCreateForm(!showCreateForm)}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-3xl font-medium text-text-primary bg-accent-blue hover:bg-accent-blue-hover"
           >
             <Plus className="h-4 w-4 mr-2" />
             New Project
@@ -107,8 +107,8 @@ export default function Projects() {
       }
       sidebar={
         <div className="px-6 py-5">
-          <h3 className="text-sm font-semibold text-white">Tips</h3>
-          <p className="mt-2 text-sm text-gray-400">
+          <h3 className="text-3xl font-semibold text-text-primary">Tips</h3>
+          <p className="mt-2 text-3xl text-text-secondary">
             Create a separate project for each application you want to scan. Each project can contain multiple SBOMs.
           </p>
         </div>
@@ -117,11 +117,11 @@ export default function Projects() {
 
       {/* Create Project Form */}
       {showCreateForm && (
-        <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 p-6">
-          <h3 className="text-lg font-medium text-white mb-4">Create New Project</h3>
-          <form onSubmit={handleCreateProject} className="space-y-4">
+        <div className="bg-bg-card shadow-lg rounded-xl border border-borderp-8">
+          <h3 className="text-3xl font-medium text-text-primary mb-8">Create New Project</h3>
+          <form onSubmit={handleCreateProject} className="space-y-8">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="name" className="block text-3xl font-medium text-text-secondary">
                 Project Name
               </label>
               <input
@@ -129,12 +129,12 @@ export default function Projects() {
                 id="name"
                 value={newProject.name}
                 onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                className="mt-1 block w-full rounded-md bg-navy-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                className="mt-1 block w-full rounded-lg bg-bg-tertiary border-border text-text-primary placeholder-text-tertiary focus:border-accent-blue focus:ring-accent-blue sm:text-3xl px-3 py-2 border"
                 required
               />
             </div>
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="description" className="block text-3xl font-medium text-text-secondary">
                 Description
               </label>
               <textarea
@@ -142,21 +142,21 @@ export default function Projects() {
                 value={newProject.description}
                 onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
                 rows={3}
-                className="mt-1 block w-full rounded-md bg-navy-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                className="mt-1 block w-full rounded-lg bg-bg-tertiary border-border text-text-primary placeholder-text-tertiary focus:border-accent-blue focus:ring-accent-blue sm:text-3xl px-3 py-2 border"
               />
             </div>
             <div className="flex justify-end space-x-3">
               <button
                 type="button"
                 onClick={() => setShowCreateForm(false)}
-                className="px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 bg-navy-700 hover:bg-gray-600"
+                className="px-4 py-2 border border-border rounded-lg shadow-sm text-3xl font-medium text-text-secondary bg-bg-tertiary hover:bg-gray-600"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={createMutation.isPending}
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-500"
+                className="px-4 py-2 border border-transparent rounded-lg shadow-sm text-3xl font-medium text-text-primary bg-accent-blue hover:bg-accent-blue-hover disabled:bg-gray-500"
               >
                 {createMutation.isPending ? 'Creating...' : 'Create Project'}
               </button>
@@ -167,55 +167,55 @@ export default function Projects() {
 
       {/* Projects List or Cards */}
       {isLoading ? (
-        <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 p-6 text-center text-gray-400">
+        <div className="bg-bg-card shadow-lg rounded-xl border border-borderp-8 text-center text-text-secondary">
           Loading projects...
         </div>
       ) : projectsData?.projects?.length > 0 ? (
         viewMode === 'list' ? (
           /* List View */
-          <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 overflow-hidden">
+          <div className="bg-bg-card shadow-lg rounded-xl border border-border overflow-hidden">
             <table className="min-w-full divide-y divide-gray-700">
               <thead className="bg-gray-750">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                     Project Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                     Last Scan
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                     Components
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                     Vulnerabilities
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
                 {projectsData.projects.map((project: any) => (
-                  <tr key={project.id} className="hover:bg-navy-700/50 transition-colors">
+                  <tr key={project.id} className="hover:bg-bg-tertiary/50 transition-colors">
                     <td className="px-6 py-4">
                       <Link to={`/projects/${project.id}`} className="flex items-center">
-                        <FolderOpen className="h-5 w-5 text-blue-400 mr-3" />
+                        <FolderOpen className="h-5 w-5 text-accent-blue mr-3" />
                         <div>
-                          <p className="text-sm font-medium text-white">{project.name}</p>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-3xl font-medium text-text-primary">{project.name}</p>
+                          <p className="text-xs text-text-secondary">
                             {project.description || 'No description'}
                           </p>
                         </div>
                       </Link>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-400">
+                    <td className="px-6 py-4 text-3xl text-text-secondary">
                       {new Date(project.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-400">
+                    <td className="px-6 py-4 text-3xl text-text-secondary">
                       {/* Placeholder - would need actual component count */}
                       -
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-400">
+                    <td className="px-6 py-4 text-3xl text-text-secondary">
                       {/* Placeholder - would need actual vulnerability count */}
                       -
                     </td>
@@ -223,13 +223,13 @@ export default function Projects() {
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           to={`/projects/${project.id}`}
-                          className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                          className="px-3 py-1 text-3xl bg-accent-blue text-text-primary rounded hover:bg-accent-blue-hover"
                         >
                           View
                         </Link>
                         <Link
                           to="/scanner"
-                          className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                          className="px-3 py-1 text-3xl bg-green-600 text-text-primary rounded hover:bg-green-700"
                         >
                           Scan
                         </Link>
@@ -249,14 +249,14 @@ export default function Projects() {
           </div>
         ) : (
           /* Card View */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {projectsData.projects.map((project: any) => (
               <div
                 key={project.id}
-                className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 p-6 hover:border-blue-500 transition-colors"
+                className="bg-bg-card shadow-lg rounded-xl border border-borderp-8 hover:border-blue-500 transition-colors"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <FolderOpen className="h-10 w-10 text-blue-400" />
+                <div className="flex items-start justify-between mb-8">
+                  <FolderOpen className="h-10 w-10 text-accent-blue" />
                   <button
                     onClick={() => handleDeleteProject(project.id, project.name)}
                     className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/30 rounded"
@@ -266,11 +266,11 @@ export default function Projects() {
                   </button>
                 </div>
                 <Link to={`/projects/${project.id}`}>
-                  <h3 className="text-lg font-medium text-white mb-2">{project.name}</h3>
-                  <p className="text-sm text-gray-400 mb-4">
+                  <h3 className="text-3xl font-medium text-text-primary mb-2">{project.name}</h3>
+                  <p className="text-3xl text-text-secondary mb-8">
                     {project.description || 'No description'}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-text-tertiary">
                     Created {new Date(project.createdAt).toLocaleDateString()}
                   </p>
                 </Link>
@@ -279,9 +279,9 @@ export default function Projects() {
           </div>
         )
       ) : (
-        <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 p-6 text-center">
-          <FolderOpen className="h-12 w-12 mx-auto mb-3 text-gray-500" />
-          <p className="text-gray-400 mb-4">
+        <div className="bg-bg-card shadow-lg rounded-xl border border-borderp-8 text-center">
+          <FolderOpen className="h-12 w-12 mx-auto mb-3 text-text-tertiary" />
+          <p className="text-text-secondary mb-8">
             No projects yet. Click "New Project" to create one!
           </p>
         </div>
