@@ -130,7 +130,7 @@ export default function ProjectDetail() {
       actions={
         <Link
           to="/projects"
-          className="inline-flex items-center px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600"
+          className="inline-flex items-center px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 bg-navy-700 hover:bg-gray-600"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
@@ -147,7 +147,7 @@ export default function ProjectDetail() {
     >
 
       {/* Project Info */}
-      <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 p-6">
+      <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 p-6">
         <h3 className="text-lg font-medium text-white mb-4">Project Information</h3>
         <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
@@ -176,7 +176,7 @@ export default function ProjectDetail() {
       </div>
 
       {/* SBOMs List */}
-      <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 p-6">
+      <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 p-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium text-white">SBOMs</h3>
           <button 
@@ -238,42 +238,42 @@ export default function ProjectDetail() {
                       </button>
                       
                       {openExportDropdown === sbom.id && (
-                        <div className="absolute right-0 mt-1 w-56 bg-gray-800 rounded-md shadow-xl border border-gray-600 z-50">
+                        <div className="absolute right-0 mt-1 w-56 bg-navy-800 rounded-md shadow-xl border border-gray-600 z-50">
                           <div className="py-1">
-                            <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b border-gray-700">
+                            <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b border-navy-600">
                               Standard Formats
                             </div>
                             <button
                               onClick={() => handleExport(sbom.id, exportApi.downloadCSV)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-navy-700 transition-colors"
                             >
                               📄 CSV
                             </button>
                             <button
                               onClick={() => handleExport(sbom.id, exportApi.downloadExcel)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-navy-700 transition-colors"
                             >
                               📊 Excel (.xlsx)
                             </button>
                             <button
                               onClick={() => handleExport(sbom.id, exportApi.downloadJSON)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-navy-700 transition-colors"
                             >
                               📦 JSON
                             </button>
-                            <div className="border-t border-gray-700 my-1"></div>
-                            <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b border-gray-700">
+                            <div className="border-t border-navy-600 my-1"></div>
+                            <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b border-navy-600">
                               SBOM Formats
                             </div>
                             <button
                               onClick={() => handleExport(sbom.id, exportApi.downloadSPDX)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-navy-700 transition-colors"
                             >
                               🔒 SPDX 2.3
                             </button>
                             <button
                               onClick={() => handleExport(sbom.id, exportApi.downloadCycloneDX)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-navy-700 transition-colors"
                             >
                               🔄 CycloneDX 1.5
                             </button>
@@ -304,7 +304,7 @@ export default function ProjectDetail() {
                       <>
                         {/* Vulnerabilities */}
                         {vulnerabilitySummary && (
-                          <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                          <div className="bg-navy-700/50 rounded-lg p-4 border border-gray-600">
                             <div className="flex items-center mb-3">
                               <Shield className="h-5 w-5 text-red-400 mr-2" />
                               <h4 className="font-medium text-white">Vulnerability Summary</h4>
@@ -338,7 +338,7 @@ export default function ProjectDetail() {
                                 </div>
                                 <p className="text-xl font-bold text-blue-100">{vulnerabilitySummary.low}</p>
                               </div>
-                              <div className="bg-gray-700 rounded px-3 py-2 border border-gray-600">
+                              <div className="bg-navy-700 rounded px-3 py-2 border border-gray-600">
                                 <div className="flex items-center justify-between">
                                   <span className="text-xs text-gray-300">Total</span>
                                   <Shield className="h-4 w-4 text-gray-400" />
@@ -351,7 +351,7 @@ export default function ProjectDetail() {
 
                         {/* License Summary */}
                         {licenseSummary && (
-                          <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                          <div className="bg-navy-700/50 rounded-lg p-4 border border-gray-600">
                             <div className="flex items-center mb-3">
                               <Scale className="h-5 w-5 text-purple-400 mr-2" />
                               <h4 className="font-medium text-white">License Summary</h4>
@@ -369,7 +369,7 @@ export default function ProjectDetail() {
                                 <span className="text-xs text-red-300">High Risk</span>
                                 <p className="text-xl font-bold text-red-100">{licenseSummary.riskDistribution.high}</p>
                               </div>
-                              <div className="bg-gray-700 rounded px-3 py-2 border border-gray-600">
+                              <div className="bg-navy-700 rounded px-3 py-2 border border-gray-600">
                                 <span className="text-xs text-gray-300">Unknown</span>
                                 <p className="text-xl font-bold text-white">{licenseSummary.unknownCount}</p>
                               </div>
@@ -394,7 +394,7 @@ export default function ProjectDetail() {
                         <h4 className="text-sm font-medium text-gray-300 mb-2">
                           Components ({componentsData.components.length})
                         </h4>
-                        <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
+                        <div className="bg-navy-800 border border-navy-600 rounded-lg overflow-hidden">
                           <div className="max-h-96 overflow-y-auto">
                             <table className="min-w-full divide-y divide-gray-700">
                               <thead className="bg-gray-750 sticky top-0">
@@ -407,12 +407,12 @@ export default function ProjectDetail() {
                               </thead>
                               <tbody className="divide-y divide-gray-700">
                                 {componentsData.components.map((comp: any) => (
-                                  <tr key={comp.id} className="hover:bg-gray-700/50">
+                                  <tr key={comp.id} className="hover:bg-navy-700/50">
                                     <td className="px-4 py-2 font-mono text-xs text-white">{comp.name}</td>
                                     <td className="px-4 py-2 font-mono text-xs text-gray-400">{comp.version}</td>
                                     <td className="px-4 py-2 text-xs">
                                       <span className={`px-2 py-1 rounded text-xs ${
-                                        !comp.license ? 'bg-gray-700 text-gray-400' : 'bg-green-900/30 text-green-300 border border-green-700'
+                                        !comp.license ? 'bg-navy-700 text-gray-400' : 'bg-green-900/30 text-green-300 border border-green-700'
                                       }`}>
                                         {comp.license || 'Unknown'}
                                       </span>

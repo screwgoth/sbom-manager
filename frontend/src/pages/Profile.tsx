@@ -26,7 +26,7 @@ export default function Profile() {
           <div className="mt-4 space-y-4">
             <Link
               to="/dashboard"
-              className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-gray-300 bg-gray-700 border border-gray-600 rounded-md hover:bg-gray-600"
+              className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-gray-300 bg-navy-700 border border-gray-600 rounded-md hover:bg-gray-600"
             >
               <span className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-blue-400" />
@@ -45,7 +45,7 @@ export default function Profile() {
         </div>
       }
     >
-      <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 overflow-hidden">
+      <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 overflow-hidden">
         <div className="p-6">
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="flex items-start space-x-3">

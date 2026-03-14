@@ -33,7 +33,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-navy-950 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center">
@@ -49,7 +49,7 @@ export default function Login() {
           </p>
         </div>
 
-        <div className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 p-8">
+        <div className="bg-navy-800 rounded-lg shadow-xl border border-navy-600 p-8">
           {error && (
             <div className="mb-4 bg-red-900/30 border border-red-700 rounded-md p-3 flex items-center">
               <AlertCircle className="h-5 w-5 text-red-400 mr-2" />
@@ -70,7 +70,7 @@ export default function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="mt-1 block w-full px-3 py-2 bg-navy-700 border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="you@example.com"
               />
             </div>
@@ -87,7 +87,7 @@ export default function Login() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="mt-1 block w-full px-3 py-2 bg-navy-700 border border-gray-600 rounded-md shadow-sm text-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="••••••••"
               />
             </div>
@@ -113,17 +113,17 @@ export default function Login() {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-700" />
+                <div className="w-full border-t border-navy-600" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-800 text-gray-400">New to SBOM Manager?</span>
+                <span className="px-2 bg-navy-800 text-gray-400">New to SBOM Manager?</span>
               </div>
             </div>
 
             <div className="mt-6">
               <Link
                 to="/register"
-                className="w-full flex justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="w-full flex justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 bg-navy-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Create an account
               </Link>

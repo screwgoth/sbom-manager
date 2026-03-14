@@ -234,7 +234,7 @@ export default function Scanner() {
             className={`px-4 py-2 rounded ${
               scanMode === 'upload'
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-300'
+                : 'bg-navy-700 text-gray-300 hover:bg-gray-300'
             }`}
           >
             Upload Files
@@ -244,7 +244,7 @@ export default function Scanner() {
             className={`px-4 py-2 rounded ${
               scanMode === 'directory'
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-300'
+                : 'bg-navy-700 text-gray-300 hover:bg-gray-300'
             }`}
           >
             Scan Directory
@@ -384,7 +384,7 @@ export default function Scanner() {
                     return (
                       <div
                         key={idx}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-700"
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded border border-navy-600"
                       >
                         <div className="flex items-center space-x-3 flex-1 min-w-0">
                           <svg

@@ -71,7 +71,7 @@ export default function Projects() {
       actions={
         <div className="flex items-center gap-2">
           {/* View Toggle */}
-          <div className="flex items-center gap-1 bg-gray-700 rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-navy-700 rounded-lg p-1">
             <button
               onClick={() => handleViewModeChange('list')}
               className={`p-2 rounded ${
@@ -117,7 +117,7 @@ export default function Projects() {
 
       {/* Create Project Form */}
       {showCreateForm && (
-        <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 p-6">
+        <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 p-6">
           <h3 className="text-lg font-medium text-white mb-4">Create New Project</h3>
           <form onSubmit={handleCreateProject} className="space-y-4">
             <div>
@@ -129,7 +129,7 @@ export default function Projects() {
                 id="name"
                 value={newProject.name}
                 onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                className="mt-1 block w-full rounded-md bg-navy-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
                 required
               />
             </div>
@@ -142,14 +142,14 @@ export default function Projects() {
                 value={newProject.description}
                 onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
                 rows={3}
-                className="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
+                className="mt-1 block w-full rounded-md bg-navy-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm px-3 py-2 border"
               />
             </div>
             <div className="flex justify-end space-x-3">
               <button
                 type="button"
                 onClick={() => setShowCreateForm(false)}
-                className="px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600"
+                className="px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 bg-navy-700 hover:bg-gray-600"
               >
                 Cancel
               </button>
@@ -167,13 +167,13 @@ export default function Projects() {
 
       {/* Projects List or Cards */}
       {isLoading ? (
-        <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 p-6 text-center text-gray-400">
+        <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 p-6 text-center text-gray-400">
           Loading projects...
         </div>
       ) : projectsData?.projects?.length > 0 ? (
         viewMode === 'list' ? (
           /* List View */
-          <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 overflow-hidden">
+          <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 overflow-hidden">
             <table className="min-w-full divide-y divide-gray-700">
               <thead className="bg-gray-750">
                 <tr>
@@ -196,7 +196,7 @@ export default function Projects() {
               </thead>
               <tbody className="divide-y divide-gray-700">
                 {projectsData.projects.map((project: any) => (
-                  <tr key={project.id} className="hover:bg-gray-700/50 transition-colors">
+                  <tr key={project.id} className="hover:bg-navy-700/50 transition-colors">
                     <td className="px-6 py-4">
                       <Link to={`/projects/${project.id}`} className="flex items-center">
                         <FolderOpen className="h-5 w-5 text-blue-400 mr-3" />
@@ -253,7 +253,7 @@ export default function Projects() {
             {projectsData.projects.map((project: any) => (
               <div
                 key={project.id}
-                className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 p-6 hover:border-blue-500 transition-colors"
+                className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 p-6 hover:border-blue-500 transition-colors"
               >
                 <div className="flex items-start justify-between mb-4">
                   <FolderOpen className="h-10 w-10 text-blue-400" />
@@ -279,7 +279,7 @@ export default function Projects() {
           </div>
         )
       ) : (
-        <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 p-6 text-center">
+        <div className="bg-navy-800 shadow-lg rounded-lg border border-navy-600 p-6 text-center">
           <FolderOpen className="h-12 w-12 mx-auto mb-3 text-gray-500" />
           <p className="text-gray-400 mb-4">
             No projects yet. Click "New Project" to create one!
