@@ -12,8 +12,9 @@ import {
   Loader2,
   RefreshCw,
   Download,
+  ChevronDown,
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PageShell from '../components/PageShell';
 
 export default function ProjectDetail() {
@@ -24,6 +25,23 @@ export default function ProjectDetail() {
   const [vulnerabilitySummary, setVulnerabilitySummary] = useState<any>(null);
   const [licenseSummary, setLicenseSummary] = useState<any>(null);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
+  const [openExportDropdown, setOpenExportDropdown] = useState<string | null>(null);
+  const dropdownRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openExportDropdown) {
+        const dropdown = dropdownRef.current[openExportDropdown];
+        if (dropdown && !dropdown.contains(event.target as Node)) {
+          setOpenExportDropdown(null);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openExportDropdown]);
 
   const { data: projectData, isLoading: projectLoading } = useQuery({
     queryKey: ['project', id],
@@ -90,12 +108,17 @@ export default function ProjectDetail() {
     fetchSummaries();
   }, [selectedSbomId]);
 
+  const handleExport = (sbomId: string, exportFn: (id: string) => void) => {
+    exportFn(sbomId);
+    setOpenExportDropdown(null);
+  };
+
   if (projectLoading) {
-    return <div className="text-center text-gray-500">Loading project...</div>;
+    return <div className="text-center text-gray-400 p-8">Loading project...</div>;
   }
 
   if (!projectData?.project) {
-    return <div className="text-center text-red-500">Project not found</div>;
+    return <div className="text-center text-red-400 p-8">Project not found</div>;
   }
 
   const project = projectData.project;
@@ -107,7 +130,7 @@ export default function ProjectDetail() {
       actions={
         <Link
           to="/projects"
-          className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+          className="inline-flex items-center px-4 py-2 border border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-300 bg-gray-700 hover:bg-gray-600"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
@@ -115,8 +138,8 @@ export default function ProjectDetail() {
       }
       sidebar={
         <div className="px-6 py-5">
-          <h3 className="text-sm font-semibold text-gray-900">Project Details</h3>
-          <p className="text-sm text-gray-600 mt-2">
+          <h3 className="text-sm font-semibold text-white">Project Details</h3>
+          <p className="text-sm text-gray-400 mt-2">
             Use this screen to review and export SBOMs for this project.
           </p>
         </div>
@@ -124,28 +147,28 @@ export default function ProjectDetail() {
     >
 
       {/* Project Info */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Project Information</h3>
+      <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 p-6">
+        <h3 className="text-lg font-medium text-white mb-4">Project Information</h3>
         <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <dt className="text-sm font-medium text-gray-500">Project ID</dt>
-            <dd className="mt-1 text-sm text-gray-900 font-mono text-xs">{project.id}</dd>
+            <dt className="text-sm font-medium text-gray-400">Project ID</dt>
+            <dd className="mt-1 text-sm text-gray-300 font-mono text-xs">{project.id}</dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Created</dt>
-            <dd className="mt-1 text-sm text-gray-900">
+            <dt className="text-sm font-medium text-gray-400">Created</dt>
+            <dd className="mt-1 text-sm text-gray-300">
               {new Date(project.createdAt).toLocaleString()}
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Last Updated</dt>
-            <dd className="mt-1 text-sm text-gray-900">
+            <dt className="text-sm font-medium text-gray-400">Last Updated</dt>
+            <dd className="mt-1 text-sm text-gray-300">
               {new Date(project.updatedAt).toLocaleString()}
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Total SBOMs</dt>
-            <dd className="mt-1 text-sm text-gray-900">
+            <dt className="text-sm font-medium text-gray-400">Total SBOMs</dt>
+            <dd className="mt-1 text-sm text-gray-300">
               {sbomsData?.sboms?.length || 0}
             </dd>
           </div>
@@ -153,9 +176,9 @@ export default function ProjectDetail() {
       </div>
 
       {/* SBOMs List */}
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium text-gray-900">SBOMs</h3>
+          <h3 className="text-lg font-medium text-white">SBOMs</h3>
           <button 
             onClick={() => navigate('/scanner')}
             className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
@@ -164,19 +187,19 @@ export default function ProjectDetail() {
           </button>
         </div>
         {sbomsLoading ? (
-          <p className="text-gray-500">Loading SBOMs...</p>
+          <p className="text-gray-400">Loading SBOMs...</p>
         ) : sbomsData?.sboms?.length > 0 ? (
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-gray-700">
             {sbomsData.sboms.map((sbom: any) => (
               <li key={sbom.id} className="py-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <FileText className="h-8 w-8 text-blue-600" />
+                    <FileText className="h-8 w-8 text-blue-400" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-white">
                         Version {sbom.version} ({sbom.format.toUpperCase()})
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-400">
                         Created {new Date(sbom.createdAt).toLocaleString()}
                         {sbom.author && ` by ${sbom.author}`}
                       </p>
@@ -188,7 +211,7 @@ export default function ProjectDetail() {
                         scanVulnerabilitiesMutation.mutate(sbom.id);
                       }}
                       disabled={scanVulnerabilitiesMutation.isPending}
-                      className="px-3 py-1 text-sm bg-red-50 text-red-700 rounded hover:bg-red-100 disabled:opacity-50 flex items-center"
+                      className="px-3 py-1 text-sm bg-red-900/30 text-red-300 rounded hover:bg-red-900/50 disabled:opacity-50 flex items-center border border-red-700"
                     >
                       {scanVulnerabilitiesMutation.isPending ? (
                         <>
@@ -202,54 +225,66 @@ export default function ProjectDetail() {
                         </>
                       )}
                     </button>
-                    <div className="relative group">
+                    
+                    {/* Export Dropdown - Fixed Version */}
+                    <div className="relative" ref={(el) => { dropdownRef.current[sbom.id] = el; }}>
                       <button
-                        className="px-3 py-1 text-sm bg-green-50 text-green-700 rounded hover:bg-green-100 flex items-center"
+                        onClick={() => setOpenExportDropdown(openExportDropdown === sbom.id ? null : sbom.id)}
+                        className="px-3 py-1 text-sm bg-green-900/30 text-green-300 rounded hover:bg-green-900/50 flex items-center border border-green-700"
                       >
                         <Download className="h-4 w-4 mr-1" />
                         Export
+                        <ChevronDown className="h-3 w-3 ml-1" />
                       </button>
-                      <div className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 hidden group-hover:block z-10">
-                        <div className="py-1">
-                          <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Standard Formats</div>
-                          <button
-                            onClick={() => exportApi.downloadCSV(sbom.id)}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            📄 CSV
-                          </button>
-                          <button
-                            onClick={() => exportApi.downloadExcel(sbom.id)}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            📊 Excel (.xlsx)
-                          </button>
-                          <button
-                            onClick={() => exportApi.downloadJSON(sbom.id)}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            📦 JSON
-                          </button>
-                          <div className="border-t border-gray-200 my-1"></div>
-                          <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">SBOM Formats</div>
-                          <button
-                            onClick={() => exportApi.downloadSPDX(sbom.id)}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            🔒 SPDX 2.3
-                          </button>
-                          <button
-                            onClick={() => exportApi.downloadCycloneDX(sbom.id)}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            🔄 CycloneDX 1.5
-                          </button>
+                      
+                      {openExportDropdown === sbom.id && (
+                        <div className="absolute right-0 mt-1 w-56 bg-gray-800 rounded-md shadow-xl border border-gray-600 z-50">
+                          <div className="py-1">
+                            <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b border-gray-700">
+                              Standard Formats
+                            </div>
+                            <button
+                              onClick={() => handleExport(sbom.id, exportApi.downloadCSV)}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                            >
+                              📄 CSV
+                            </button>
+                            <button
+                              onClick={() => handleExport(sbom.id, exportApi.downloadExcel)}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                            >
+                              📊 Excel (.xlsx)
+                            </button>
+                            <button
+                              onClick={() => handleExport(sbom.id, exportApi.downloadJSON)}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                            >
+                              📦 JSON
+                            </button>
+                            <div className="border-t border-gray-700 my-1"></div>
+                            <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b border-gray-700">
+                              SBOM Formats
+                            </div>
+                            <button
+                              onClick={() => handleExport(sbom.id, exportApi.downloadSPDX)}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                            >
+                              🔒 SPDX 2.3
+                            </button>
+                            <button
+                              onClick={() => handleExport(sbom.id, exportApi.downloadCycloneDX)}
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                            >
+                              🔄 CycloneDX 1.5
+                            </button>
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
+                    
                     <button
                       onClick={() => setSelectedSbomId(selectedSbomId === sbom.id ? null : sbom.id)}
-                      className="px-3 py-1 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100"
+                      className="px-3 py-1 text-sm bg-blue-900/30 text-blue-300 rounded hover:bg-blue-900/50 border border-blue-700"
                     >
                       {selectedSbomId === sbom.id ? 'Hide Details' : 'View Details'}
                     </button>
@@ -262,53 +297,53 @@ export default function ProjectDetail() {
                     {/* Vulnerability Summary */}
                     {loadingSummaries ? (
                       <div className="flex items-center justify-center py-4">
-                        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-                        <span className="ml-2 text-gray-500">Loading analysis...</span>
+                        <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
+                        <span className="ml-2 text-gray-400">Loading analysis...</span>
                       </div>
                     ) : (
                       <>
                         {/* Vulnerabilities */}
                         {vulnerabilitySummary && (
-                          <div className="bg-gray-50 rounded-lg p-4">
+                          <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
                             <div className="flex items-center mb-3">
-                              <Shield className="h-5 w-5 text-red-600 mr-2" />
-                              <h4 className="font-medium text-gray-900">Vulnerability Summary</h4>
+                              <Shield className="h-5 w-5 text-red-400 mr-2" />
+                              <h4 className="font-medium text-white">Vulnerability Summary</h4>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                              <div className="bg-red-100 rounded px-3 py-2">
+                              <div className="bg-red-900/30 rounded px-3 py-2 border border-red-700">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-xs text-red-800">Critical</span>
-                                  <XCircle className="h-4 w-4 text-red-600" />
+                                  <span className="text-xs text-red-300">Critical</span>
+                                  <XCircle className="h-4 w-4 text-red-400" />
                                 </div>
-                                <p className="text-xl font-bold text-red-900">{vulnerabilitySummary.critical}</p>
+                                <p className="text-xl font-bold text-red-100">{vulnerabilitySummary.critical}</p>
                               </div>
-                              <div className="bg-orange-100 rounded px-3 py-2">
+                              <div className="bg-orange-900/30 rounded px-3 py-2 border border-orange-700">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-xs text-orange-800">High</span>
-                                  <AlertCircle className="h-4 w-4 text-orange-600" />
+                                  <span className="text-xs text-orange-300">High</span>
+                                  <AlertCircle className="h-4 w-4 text-orange-400" />
                                 </div>
-                                <p className="text-xl font-bold text-orange-900">{vulnerabilitySummary.high}</p>
+                                <p className="text-xl font-bold text-orange-100">{vulnerabilitySummary.high}</p>
                               </div>
-                              <div className="bg-yellow-100 rounded px-3 py-2">
+                              <div className="bg-yellow-900/30 rounded px-3 py-2 border border-yellow-700">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-xs text-yellow-800">Medium</span>
-                                  <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                                  <span className="text-xs text-yellow-300">Medium</span>
+                                  <AlertTriangle className="h-4 w-4 text-yellow-400" />
                                 </div>
-                                <p className="text-xl font-bold text-yellow-900">{vulnerabilitySummary.medium}</p>
+                                <p className="text-xl font-bold text-yellow-100">{vulnerabilitySummary.medium}</p>
                               </div>
-                              <div className="bg-blue-100 rounded px-3 py-2">
+                              <div className="bg-blue-900/30 rounded px-3 py-2 border border-blue-700">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-xs text-blue-800">Low</span>
-                                  <AlertCircle className="h-4 w-4 text-blue-600" />
+                                  <span className="text-xs text-blue-300">Low</span>
+                                  <AlertCircle className="h-4 w-4 text-blue-400" />
                                 </div>
-                                <p className="text-xl font-bold text-blue-900">{vulnerabilitySummary.low}</p>
+                                <p className="text-xl font-bold text-blue-100">{vulnerabilitySummary.low}</p>
                               </div>
-                              <div className="bg-gray-100 rounded px-3 py-2">
+                              <div className="bg-gray-700 rounded px-3 py-2 border border-gray-600">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-xs text-gray-800">Total</span>
-                                  <Shield className="h-4 w-4 text-gray-600" />
+                                  <span className="text-xs text-gray-300">Total</span>
+                                  <Shield className="h-4 w-4 text-gray-400" />
                                 </div>
-                                <p className="text-xl font-bold text-gray-900">{vulnerabilitySummary.total}</p>
+                                <p className="text-xl font-bold text-white">{vulnerabilitySummary.total}</p>
                               </div>
                             </div>
                           </div>
@@ -316,32 +351,32 @@ export default function ProjectDetail() {
 
                         {/* License Summary */}
                         {licenseSummary && (
-                          <div className="bg-gray-50 rounded-lg p-4">
+                          <div className="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
                             <div className="flex items-center mb-3">
-                              <Scale className="h-5 w-5 text-purple-600 mr-2" />
-                              <h4 className="font-medium text-gray-900">License Summary</h4>
+                              <Scale className="h-5 w-5 text-purple-400 mr-2" />
+                              <h4 className="font-medium text-white">License Summary</h4>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-                              <div className="bg-green-100 rounded px-3 py-2">
-                                <span className="text-xs text-green-800">Low Risk</span>
-                                <p className="text-xl font-bold text-green-900">{licenseSummary.riskDistribution.low}</p>
+                              <div className="bg-green-900/30 rounded px-3 py-2 border border-green-700">
+                                <span className="text-xs text-green-300">Low Risk</span>
+                                <p className="text-xl font-bold text-green-100">{licenseSummary.riskDistribution.low}</p>
                               </div>
-                              <div className="bg-yellow-100 rounded px-3 py-2">
-                                <span className="text-xs text-yellow-800">Medium Risk</span>
-                                <p className="text-xl font-bold text-yellow-900">{licenseSummary.riskDistribution.medium}</p>
+                              <div className="bg-yellow-900/30 rounded px-3 py-2 border border-yellow-700">
+                                <span className="text-xs text-yellow-300">Medium Risk</span>
+                                <p className="text-xl font-bold text-yellow-100">{licenseSummary.riskDistribution.medium}</p>
                               </div>
-                              <div className="bg-red-100 rounded px-3 py-2">
-                                <span className="text-xs text-red-800">High Risk</span>
-                                <p className="text-xl font-bold text-red-900">{licenseSummary.riskDistribution.high}</p>
+                              <div className="bg-red-900/30 rounded px-3 py-2 border border-red-700">
+                                <span className="text-xs text-red-300">High Risk</span>
+                                <p className="text-xl font-bold text-red-100">{licenseSummary.riskDistribution.high}</p>
                               </div>
-                              <div className="bg-gray-100 rounded px-3 py-2">
-                                <span className="text-xs text-gray-800">Unknown</span>
-                                <p className="text-xl font-bold text-gray-900">{licenseSummary.unknownCount}</p>
+                              <div className="bg-gray-700 rounded px-3 py-2 border border-gray-600">
+                                <span className="text-xs text-gray-300">Unknown</span>
+                                <p className="text-xl font-bold text-white">{licenseSummary.unknownCount}</p>
                               </div>
                             </div>
                             {licenseSummary.policyViolations.length > 0 && (
-                              <div className="bg-red-50 border border-red-200 rounded p-2 mt-2">
-                                <p className="text-xs text-red-800 font-medium">
+                              <div className="bg-red-900/30 border border-red-700 rounded p-2 mt-2">
+                                <p className="text-xs text-red-200 font-medium">
                                   ⚠️ {licenseSummary.policyViolations.length} Policy Violation(s)
                                 </p>
                               </div>
@@ -353,36 +388,36 @@ export default function ProjectDetail() {
 
                     {/* Components Table */}
                     {componentsLoading ? (
-                      <p className="text-sm text-gray-500">Loading components...</p>
+                      <p className="text-sm text-gray-400">Loading components...</p>
                     ) : componentsData?.components?.length > 0 ? (
                       <div>
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">
+                        <h4 className="text-sm font-medium text-gray-300 mb-2">
                           Components ({componentsData.components.length})
                         </h4>
-                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                        <div className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
                           <div className="max-h-96 overflow-y-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                              <thead className="bg-gray-50 sticky top-0">
+                            <table className="min-w-full divide-y divide-gray-700">
+                              <thead className="bg-gray-750 sticky top-0">
                                 <tr>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Name</th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Version</th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">License</th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Supplier</th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Name</th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Version</th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">License</th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Supplier</th>
                                 </tr>
                               </thead>
-                              <tbody className="bg-white divide-y divide-gray-200">
+                              <tbody className="divide-y divide-gray-700">
                                 {componentsData.components.map((comp: any) => (
-                                  <tr key={comp.id} className="hover:bg-gray-50">
-                                    <td className="px-4 py-2 font-mono text-xs text-gray-900">{comp.name}</td>
-                                    <td className="px-4 py-2 font-mono text-xs text-gray-600">{comp.version}</td>
+                                  <tr key={comp.id} className="hover:bg-gray-700/50">
+                                    <td className="px-4 py-2 font-mono text-xs text-white">{comp.name}</td>
+                                    <td className="px-4 py-2 font-mono text-xs text-gray-400">{comp.version}</td>
                                     <td className="px-4 py-2 text-xs">
                                       <span className={`px-2 py-1 rounded text-xs ${
-                                        !comp.license ? 'bg-gray-100 text-gray-600' : 'bg-green-100 text-green-800'
+                                        !comp.license ? 'bg-gray-700 text-gray-400' : 'bg-green-900/30 text-green-300 border border-green-700'
                                       }`}>
                                         {comp.license || 'Unknown'}
                                       </span>
                                     </td>
-                                    <td className="px-4 py-2 text-xs text-gray-600">{comp.supplier || 'N/A'}</td>
+                                    <td className="px-4 py-2 text-xs text-gray-400">{comp.supplier || 'N/A'}</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -391,7 +426,7 @@ export default function ProjectDetail() {
                         </div>
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-500">No components found</p>
+                      <p className="text-sm text-gray-400">No components found</p>
                     )}
                   </div>
                 )}
@@ -400,8 +435,8 @@ export default function ProjectDetail() {
           </ul>
         ) : (
           <div className="text-center py-8">
-            <FileText className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-            <p className="text-gray-500 mb-4">
+            <FileText className="h-12 w-12 mx-auto mb-3 text-gray-500" />
+            <p className="text-gray-400 mb-4">
               No SBOMs yet. Generate one to get started!
             </p>
             <button 

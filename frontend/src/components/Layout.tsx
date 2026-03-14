@@ -1,14 +1,13 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, FolderOpen, Shield, Scan, LogOut, User, ChevronDown } from 'lucide-react';
+import { Home, FolderOpen, Shield, Scan, LogOut, User, Menu, X } from 'lucide-react';
 import { authApi } from '../lib/api';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
@@ -17,123 +16,178 @@ export default function Layout() {
     }
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const isActive = (path: string) => {
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
   const handleLogout = () => {
-    setMenuOpen(false);
     authApi.logout();
     navigate('/login');
   };
 
+  const navItems = [
+    { path: '/dashboard', label: 'Dashboard', icon: Home },
+    { path: '/projects', label: 'Projects', icon: FolderOpen },
+    { path: '/scanner', label: 'Scanner', icon: Scan },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Shield className="h-8 w-8 text-blue-600" />
-              <h1 className="ml-3 text-xl font-bold text-gray-900">SBOM Manager</h1>
-            </div>
-            <nav className="flex items-center space-x-4">
-              <Link
-                to="/dashboard"
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  isActive('/dashboard')
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <Home className="inline-block w-4 h-4 mr-1" />
-                Dashboard
-              </Link>
-              <Link
-                to="/projects"
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  isActive('/projects')
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <FolderOpen className="inline-block w-4 h-4 mr-1" />
-                Projects
-              </Link>
-              <Link
-                to="/scanner"
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
-                  isActive('/scanner')
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <Scan className="inline-block w-4 h-4 mr-1" />
-                Scanner
-              </Link>
-              
-              <div className="border-l border-gray-300 h-6 mx-2"></div>
+    <div className="min-h-screen bg-gray-900 flex">
+      {/* Sidebar - Desktop */}
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-gray-800 border-r border-gray-700">
+        {/* Logo */}
+        <div className="flex items-center h-16 px-6 border-b border-gray-700">
+          <Shield className="h-8 w-8 text-blue-500" />
+          <h1 className="ml-3 text-lg font-bold text-white">SBOM Manager</h1>
+        </div>
 
-              <div className="relative" ref={menuRef}>
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen((open) => !open)}
-                  className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <User className="inline-block w-5 h-5 mr-2" />
-                  <span className="hidden sm:inline">{user?.name || user?.email || 'User'}</span>
-                  <ChevronDown className="inline-block w-4 h-4 ml-1" />
-                </button>
+        {/* Navigation */}
+        <nav className="flex-1 px-4 py-6 space-y-2">
+          {navItems.map(({ path, label, icon: Icon }) => (
+            <Link
+              key={path}
+              to={path}
+              className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                isActive(path)
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+              }`}
+            >
+              <Icon className="h-5 w-5 mr-3" />
+              {label}
+            </Link>
+          ))}
+        </nav>
 
-                {menuOpen && (
-                  <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                    <Link
-                      to="/profile"
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      <User className="w-4 h-4 mr-2" />
-                      Profile
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Logout
-                    </button>
-                  </div>
-                )}
+        {/* User Section */}
+        <div className="border-t border-gray-700 p-4">
+          <Link
+            to="/profile"
+            className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors mb-2 ${
+              isActive('/profile')
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+            }`}
+          >
+            <User className="h-5 w-5 mr-3" />
+            <span className="truncate">{user?.name || user?.email || 'Profile'}</span>
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+          >
+            <LogOut className="h-5 w-5 mr-3" />
+            Logout
+          </button>
+        </div>
+      </aside>
+
+      {/* Mobile Sidebar */}
+      {sidebarOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+
+          {/* Sidebar */}
+          <aside className="fixed inset-y-0 left-0 w-64 bg-gray-800 border-r border-gray-700 z-50 lg:hidden">
+            {/* Logo */}
+            <div className="flex items-center justify-between h-16 px-6 border-b border-gray-700">
+              <div className="flex items-center">
+                <Shield className="h-8 w-8 text-blue-500" />
+                <h1 className="ml-3 text-lg font-bold text-white">SBOM Manager</h1>
               </div>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex-1 px-4 py-6 space-y-2">
+              {navItems.map(({ path, label, icon: Icon }) => (
+                <Link
+                  key={path}
+                  to={path}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                    isActive(path)
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  }`}
+                >
+                  <Icon className="h-5 w-5 mr-3" />
+                  {label}
+                </Link>
+              ))}
             </nav>
+
+            {/* User Section */}
+            <div className="border-t border-gray-700 p-4">
+              <Link
+                to="/profile"
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors mb-2 ${
+                  isActive('/profile')
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                }`}
+              >
+                <User className="h-5 w-5 mr-3" />
+                <span className="truncate">{user?.name || user?.email || 'Profile'}</span>
+              </Link>
+              <button
+                onClick={() => {
+                  setSidebarOpen(false);
+                  handleLogout();
+                }}
+                className="flex items-center w-full px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+              >
+                <LogOut className="h-5 w-5 mr-3" />
+                Logout
+              </button>
+            </div>
+          </aside>
+        </>
+      )}
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-h-screen">
+        {/* Mobile Header */}
+        <header className="lg:hidden bg-gray-800 border-b border-gray-700">
+          <div className="flex items-center justify-between h-16 px-4">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="text-gray-400 hover:text-white"
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+            <div className="flex items-center">
+              <Shield className="h-8 w-8 text-blue-500" />
+              <h1 className="ml-3 text-lg font-bold text-white">SBOM Manager</h1>
+            </div>
+            <div className="w-6" /> {/* Spacer for centering */}
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Outlet />
-      </main>
+        {/* Main Content */}
+        <main className="flex-1 w-full">
+          <Outlet />
+        </main>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <p className="text-center text-sm text-gray-500">
-            SBOM Manager v1.0.0 - CERT-In Compliant
-          </p>
-        </div>
-      </footer>
+        {/* Footer */}
+        <footer className="bg-gray-800 border-t border-gray-700">
+          <div className="px-4 sm:px-6 lg:px-8 py-4">
+            <p className="text-center text-sm text-gray-400">
+              SBOM Manager v1.0.0 - CERT-In Compliant
+            </p>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }
