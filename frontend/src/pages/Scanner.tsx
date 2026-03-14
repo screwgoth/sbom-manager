@@ -1,12 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation, useQuery } from '@tantml:parameter>
-<parameter name="command">cd ~/code/sbom-manager/frontend && cat > src/pages/Scanner.tsx << 'SCANNEREOF'
-import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { projectsApi } from '../lib/api';
-import { Loader2 } from 'lucide-react';
 import PageShell from '../components/PageShell';
 
 // Supported dependency file patterns
@@ -26,14 +21,6 @@ const SUPPORTED_FILES = {
   'Cargo.lock': 'rust',
 };
 
-type ScanProgress = {
-  isScanning: boolean;
-  currentFile?: string;
-  progress?: number;
-  componentsFound: number;
-  message?: string;
-};
-
 export default function Scanner() {
   const navigate = useNavigate();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -45,10 +32,6 @@ export default function Scanner() {
   const [author, setAuthor] = useState('');
   const [scanResult, setScanResult] = useState<any>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [scanProgress, setScanProgress] = useState<ScanProgress>({
-    isScanning: false,
-    componentsFound: 0,
-  });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch projects for dropdown
@@ -127,15 +110,6 @@ export default function Scanner() {
   // Scan mutation
   const scanMutation = useMutation({
     mutationFn: async (data: any) => {
-      // Start progress tracking
-      setScanProgress({
-        isScanning: true,
-        currentFile: scanMode === 'upload' ? selectedFiles[0]?.name : directoryPath,
-        progress: 0,
-        componentsFound: 0,
-        message: 'Initializing scan...',
-      });
-
       if (scanMode === 'upload') {
         const formData = new FormData();
         formData.append('projectId', data.projectId);
@@ -145,16 +119,6 @@ export default function Scanner() {
 
         selectedFiles.forEach((file, index) => {
           formData.append(`file${index}`, file);
-          
-          // Simulate progress per file
-          setTimeout(() => {
-            setScanProgress(prev => ({
-              ...prev,
-              currentFile: file.name,
-              progress: Math.min(((index + 1) / selectedFiles.length) * 100, 95),
-              message: `Scanning ${file.name}...`,
-            }));
-          }, index * 500);
         });
 
         const token = localStorage.getItem('auth_token');
@@ -174,11 +138,6 @@ export default function Scanner() {
         return response.json();
       } else {
         // Directory scan
-        setScanProgress(prev => ({
-          ...prev,
-          message: `Scanning directory: ${data.directoryPath}`,
-        }));
-
         const token = localStorage.getItem('auth_token');
         const response = await fetch('http://localhost:3000/api/scanner/scan/directory', {
           method: 'POST',
@@ -204,14 +163,7 @@ export default function Scanner() {
       }
     },
     onSuccess: (data) => {
-      setScanProgress({
-        isScanning: false,
-        progress: 100,
-        componentsFound: data.result.componentsCount || 0,
-        message: 'Scan completed successfully!',
-      });
       setScanResult(data.result);
-      
       // Clear files after successful scan
       if (scanMode === 'upload') {
         setSelectedFiles([]);
@@ -219,13 +171,6 @@ export default function Scanner() {
           fileInputRef.current.value = '';
         }
       }
-    },
-    onError: () => {
-      setScanProgress({
-        isScanning: false,
-        componentsFound: 0,
-        message: 'Scan failed',
-      });
     },
   });
 
@@ -245,7 +190,6 @@ export default function Scanner() {
       return;
     }
 
-    setScanResult(null);
     scanMutation.mutate({
       projectId,
       projectName,
@@ -268,73 +212,29 @@ export default function Scanner() {
       sidebar={
         <div className="px-6 py-5">
           <h3 className="text-sm font-semibold text-white">Quick tip</h3>
-          <p className="mt-2 text-sm text-gray-400">
+          <p className="mt-2 text-sm text-gray-600">
             Upload dependency manifest files or use a directory scan for CI-friendly automation.
           </p>
         </div>
       }
     >
-      <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-900/30 border border-blue-700 text-blue-300 text-sm font-medium">
+      <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium">
         <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
         Multi-file upload supported
       </div>
 
-      {/* Scan Progress Indicator */}
-      {scanProgress.isScanning && (
-        <div className="bg-blue-900/30 border border-blue-700 rounded-lg p-6">
-          <div className="flex items-center mb-4">
-            <Loader2 className="h-6 w-6 text-blue-400 mr-3 animate-spin" />
-            <h3 className="text-lg font-semibold text-white">Scanning in Progress</h3>
-          </div>
-          
-          <div className="space-y-3">
-            {scanProgress.currentFile && (
-              <div className="text-sm text-gray-300">
-                <span className="font-medium">Current file:</span> {scanProgress.currentFile}
-              </div>
-            )}
-            
-            {scanProgress.message && (
-              <div className="text-sm text-blue-300">
-                {scanProgress.message}
-              </div>
-            )}
-            
-            {scanProgress.progress !== undefined && (
-              <div>
-                <div className="flex justify-between mb-1 text-xs text-gray-400">
-                  <span>Progress</span>
-                  <span>{Math.round(scanProgress.progress)}%</span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div 
-                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${scanProgress.progress}%` }}
-                  />
-                </div>
-              </div>
-            )}
-            
-            <div className="text-sm text-gray-300">
-              <span className="font-medium">Components found:</span>{' '}
-              <span className="text-green-400 font-bold">{scanProgress.componentsFound}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Scan Mode Selection */}
-      <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Scan Mode</h2>
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h2 className="text-lg font-semibold mb-4">Scan Mode</h2>
         <div className="flex gap-4">
           <button
             onClick={() => setScanMode('upload')}
             className={`px-4 py-2 rounded ${
               scanMode === 'upload'
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-300'
             }`}
           >
             Upload Files
@@ -344,7 +244,7 @@ export default function Scanner() {
             className={`px-4 py-2 rounded ${
               scanMode === 'directory'
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-300'
             }`}
           >
             Scan Directory
@@ -353,11 +253,11 @@ export default function Scanner() {
       </div>
 
       {/* Project Selection */}
-      <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Project Information</h2>
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h2 className="text-lg font-semibold mb-4">Project Information</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Select Project</label>
+            <label className="block text-sm font-medium mb-2">Select Project</label>
             <select
               value={projectId}
               onChange={(e) => {
@@ -365,7 +265,7 @@ export default function Scanner() {
                 const project = projectsData?.projects?.find((p: any) => p.id === e.target.value);
                 if (project) setProjectName(project.name);
               }}
-              className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white focus:border-blue-500 focus:ring-blue-500"
+              className="w-full p-2 border rounded"
             >
               <option value="">-- Select a project --</option>
               {projectsData?.projects?.map((project: any) => (
@@ -377,34 +277,34 @@ export default function Scanner() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Project Name</label>
+            <label className="block text-sm font-medium mb-2">Project Name</label>
             <input
               type="text"
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
-              className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+              className="w-full p-2 border rounded"
               placeholder="my-project"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Version</label>
+            <label className="block text-sm font-medium mb-2">Version</label>
             <input
               type="text"
               value={projectVersion}
               onChange={(e) => setProjectVersion(e.target.value)}
-              className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+              className="w-full p-2 border rounded"
               placeholder="1.0.0"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Author (optional)</label>
+            <label className="block text-sm font-medium mb-2">Author (optional)</label>
             <input
               type="text"
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+              className="w-full p-2 border rounded"
               placeholder="Your name"
             />
           </div>
@@ -412,8 +312,8 @@ export default function Scanner() {
       </div>
 
       {/* File Upload or Directory Input */}
-      <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h2 className="text-lg font-semibold mb-4">
           {scanMode === 'upload' ? 'Upload Dependency Files (Multiple Files Supported)' : 'Directory Path'}
         </h2>
 
@@ -427,13 +327,13 @@ export default function Scanner() {
               onClick={() => fileInputRef.current?.click()}
               className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
                 isDragging
-                  ? 'border-blue-500 bg-blue-900/20'
-                  : 'border-gray-600 hover:border-blue-500 hover:bg-gray-700/50'
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-gray-600 hover:border-blue-400 hover:bg-gray-50'
               }`}
             >
               <div className="space-y-2">
                 <svg
-                  className="mx-auto h-12 w-12 text-gray-500"
+                  className="mx-auto h-12 w-12 text-gray-400"
                   stroke="currentColor"
                   fill="none"
                   viewBox="0 0 48 48"
@@ -445,10 +345,10 @@ export default function Scanner() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <div className="text-sm text-gray-400">
-                  <span className="font-semibold text-blue-400">Click to upload</span> or drag and drop
+                <div className="text-sm text-gray-600">
+                  <span className="font-semibold text-blue-600">Click to upload</span> or drag and drop
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-400">
                   Multiple dependency files supported: package.json, requirements.txt, pom.xml, go.mod, Cargo.toml, etc.
                 </p>
               </div>
@@ -473,7 +373,7 @@ export default function Scanner() {
                   </p>
                   <button
                     onClick={() => setSelectedFiles([])}
-                    className="text-xs text-red-400 hover:text-red-300"
+                    className="text-xs text-red-600 hover:text-red-800"
                   >
                     Clear All
                   </button>
@@ -484,11 +384,11 @@ export default function Scanner() {
                     return (
                       <div
                         key={idx}
-                        className="flex items-center justify-between p-3 bg-gray-700/50 rounded border border-gray-600"
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-700"
                       >
                         <div className="flex items-center space-x-3 flex-1 min-w-0">
                           <svg
-                            className="h-5 w-5 text-gray-500 flex-shrink-0"
+                            className="h-5 w-5 text-gray-400 flex-shrink-0"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -507,7 +407,7 @@ export default function Scanner() {
                             <div className="flex items-center space-x-2 text-xs text-gray-400">
                               <span>{(file.size / 1024).toFixed(1)} KB</span>
                               <span>•</span>
-                              <span className="font-medium text-blue-400 uppercase">
+                              <span className="font-medium text-blue-600 uppercase">
                                 {ecosystem}
                               </span>
                             </div>
@@ -515,7 +415,7 @@ export default function Scanner() {
                         </div>
                         <button
                           onClick={() => removeFile(idx)}
-                          className="ml-3 p-1 text-gray-500 hover:text-red-400 transition-colors"
+                          className="ml-3 p-1 text-gray-400 hover:text-red-600 transition-colors"
                           title="Remove file"
                         >
                           <svg
@@ -539,13 +439,13 @@ export default function Scanner() {
 
                 {/* Ecosystem Summary */}
                 {selectedFiles.length > 0 && (
-                  <div className="mt-4 p-3 bg-blue-900/30 rounded border border-blue-700">
-                    <p className="text-xs font-medium text-blue-300 mb-1">Detected Ecosystems:</p>
+                  <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
+                    <p className="text-xs font-medium text-blue-900 mb-1">Detected Ecosystems:</p>
                     <div className="flex flex-wrap gap-2">
                       {Array.from(new Set(selectedFiles.map(f => getFileEcosystem(f.name)))).map(eco => (
                         <span
                           key={eco}
-                          className="px-2 py-1 text-xs font-medium bg-blue-800 text-blue-200 rounded uppercase"
+                          className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded uppercase"
                         >
                           {eco}
                         </span>
@@ -562,7 +462,7 @@ export default function Scanner() {
               type="text"
               value={directoryPath}
               onChange={(e) => setDirectoryPath(e.target.value)}
-              className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+              className="w-full p-2 border rounded"
               placeholder="/path/to/project"
             />
             <p className="text-sm text-gray-400 mt-2">
@@ -577,9 +477,8 @@ export default function Scanner() {
         <button
           onClick={handleScan}
           disabled={scanMutation.isPending}
-          className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center"
+          className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          {scanMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
           {scanMutation.isPending ? 'Scanning...' : 'Start Scan'}
         </button>
 
@@ -595,47 +494,47 @@ export default function Scanner() {
 
       {/* Error Display */}
       {scanMutation.isError && (
-        <div className="bg-red-900/30 border border-red-700 p-4 rounded">
-          <p className="text-red-200 font-medium">Scan Failed</p>
-          <p className="text-red-300 text-sm">{(scanMutation.error as Error)?.message}</p>
+        <div className="bg-red-50 border border-red-200 p-4 rounded">
+          <p className="text-red-700 font-medium">Scan Failed</p>
+          <p className="text-red-600 text-sm">{(scanMutation.error as Error)?.message}</p>
         </div>
       )}
 
       {/* Results Display */}
-      {scanResult && !scanProgress.isScanning && (
-        <div className="bg-green-900/30 border border-green-700 p-6 rounded-lg">
-          <h2 className="text-lg font-semibold text-green-200 mb-4">Scan Complete! ✓</h2>
+      {scanResult && (
+        <div className="bg-green-50 border border-green-200 p-6 rounded-lg">
+          <h2 className="text-lg font-semibold text-green-800 mb-4">Scan Complete! ✓</h2>
           <div className="space-y-4">
             <div className="space-y-2 text-sm">
               <p>
-                <span className="font-medium text-gray-300">SBOM ID:</span>{' '}
-                <code className="bg-gray-800 px-2 py-1 rounded text-green-300">{scanResult.sbomId}</code>
+                <span className="font-medium">SBOM ID:</span>{' '}
+                <code className="bg-white px-2 py-1 rounded">{scanResult.sbomId}</code>
               </p>
               <p>
-                <span className="font-medium text-gray-300">Primary Ecosystem:</span>{' '}
-                <span className="uppercase font-mono text-green-300">{scanResult.ecosystem}</span>
+                <span className="font-medium">Primary Ecosystem:</span>{' '}
+                <span className="uppercase font-mono">{scanResult.ecosystem}</span>
               </p>
               <p>
-                <span className="font-medium text-gray-300">Total Components Found:</span>{' '}
-                <span className="font-bold text-green-200">{scanResult.componentsCount}</span>
+                <span className="font-medium">Total Components Found:</span>{' '}
+                <span className="font-bold text-green-700">{scanResult.componentsCount}</span>
               </p>
             </div>
 
             {/* Files Processed */}
             {scanResult.filesProcessed && scanResult.filesProcessed.length > 0 && (
-              <div className="pt-4 border-t border-green-700">
-                <p className="text-sm font-medium text-green-200 mb-3">
+              <div className="pt-4 border-t border-green-200">
+                <p className="text-sm font-medium text-green-900 mb-3">
                   Files Processed ({scanResult.filesProcessed.length}):
                 </p>
                 <div className="space-y-2">
                   {scanResult.filesProcessed.map((file: any, idx: number) => (
                     <div
                       key={idx}
-                      className="flex items-center justify-between p-3 bg-gray-800 rounded border border-green-700"
+                      className="flex items-center justify-between p-3 bg-white rounded border border-green-200"
                     >
                       <div className="flex items-center space-x-3">
                         <svg
-                          className="h-5 w-5 text-green-400"
+                          className="h-5 w-5 text-green-600"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -649,8 +548,8 @@ export default function Scanner() {
                         </svg>
                         <div>
                           <p className="text-sm font-medium text-white">{file.fileName}</p>
-                          <p className="text-xs text-gray-400">
-                            <span className="uppercase font-semibold text-green-400">
+                          <p className="text-xs text-gray-600">
+                            <span className="uppercase font-semibold text-green-700">
                               {file.ecosystem}
                             </span>
                             {' • '}
@@ -666,13 +565,13 @@ export default function Scanner() {
 
             {/* Ecosystems Summary */}
             {scanResult.ecosystems && scanResult.ecosystems.length > 1 && (
-              <div className="pt-4 border-t border-green-700">
-                <p className="text-sm font-medium text-green-200 mb-2">Multiple Ecosystems Detected:</p>
+              <div className="pt-4 border-t border-green-200">
+                <p className="text-sm font-medium text-green-900 mb-2">Multiple Ecosystems Detected:</p>
                 <div className="flex flex-wrap gap-2">
                   {scanResult.ecosystems.map((eco: string) => (
                     <span
                       key={eco}
-                      className="px-3 py-1 text-sm font-medium bg-green-800 text-green-200 rounded uppercase"
+                      className="px-3 py-1 text-sm font-medium bg-green-100 text-green-800 rounded uppercase"
                     >
                       {eco}
                     </span>
@@ -685,28 +584,28 @@ export default function Scanner() {
       )}
 
       {/* Ecosystem Support Info */}
-      <div className="bg-gray-800 shadow-lg rounded-lg border border-gray-700 p-6">
-        <h3 className="font-semibold text-white mb-3">Supported Ecosystems</h3>
+      <div className="bg-blue-50 border border-blue-200 p-6 rounded-lg">
+        <h3 className="font-semibold text-blue-900 mb-3">Supported Ecosystems</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
           <div>
-            <p className="font-medium text-blue-400">Node.js</p>
-            <p className="text-gray-400">package.json, package-lock.json</p>
+            <p className="font-medium text-blue-800">Node.js</p>
+            <p className="text-blue-600">package.json, package-lock.json</p>
           </div>
           <div>
-            <p className="font-medium text-blue-400">Python</p>
-            <p className="text-gray-400">requirements.txt, Pipfile, pyproject.toml</p>
+            <p className="font-medium text-blue-800">Python</p>
+            <p className="text-blue-600">requirements.txt, Pipfile, pyproject.toml</p>
           </div>
           <div>
-            <p className="font-medium text-blue-400">Java</p>
-            <p className="text-gray-400">pom.xml, build.gradle</p>
+            <p className="font-medium text-blue-800">Java</p>
+            <p className="text-blue-600">pom.xml, build.gradle</p>
           </div>
           <div>
-            <p className="font-medium text-blue-400">Go</p>
-            <p className="text-gray-400">go.mod, go.sum</p>
+            <p className="font-medium text-blue-800">Go</p>
+            <p className="text-blue-600">go.mod, go.sum</p>
           </div>
           <div>
-            <p className="font-medium text-blue-400">Rust</p>
-            <p className="text-gray-400">Cargo.toml, Cargo.lock</p>
+            <p className="font-medium text-blue-800">Rust</p>
+            <p className="text-blue-600">Cargo.toml, Cargo.lock</p>
           </div>
         </div>
       </div>
